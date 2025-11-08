@@ -5,7 +5,8 @@
   "description": "Mersel DSS Docs",
   "private": true,
   "scripts": {
-    "dev": "next dev"
+    "dev": "next dev",
+    "build": "next build"
   },
   "repository": {
     "type": "git",
