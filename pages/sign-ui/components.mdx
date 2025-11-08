@@ -1,0 +1,83 @@
+# Component Rehberi
+
+Sign UI'nin component yapısı ve kullanımı.
+
+## 📁 Component Yapısı
+
+```
+src/components/
+├── ui/              # shadcn/ui components
+├── layout/          # Layout components  
+└── theme/           # Theme components
+```
+
+## 🎨 Layout Components
+
+### Topbar
+
+Modern horizontal navigation bar.
+
+**Özellikler:**
+- Horizontal navigation menü
+- Sticky header (scroll'da üstte kalır)
+- Real-time status indicators
+- Responsive tasarım
+
+### Topbar Layout
+
+Ana layout wrapper component.
+
+```typescript
+import { TopbarLayout } from '@/components/layout/topbar-layout'
+
+function App() {
+  return (
+    <TopbarLayout>
+      <YourPage />
+    </TopbarLayout>
+  )
+}
+```
+
+## 🎯 shadcn/ui Components
+
+Kullanılan UI componentleri:
+- Button
+- Card
+- Input
+- Label
+- Alert
+- Badge
+- Tabs
+- Dialog
+- Select
+- Textarea
+
+[shadcn/ui Dökümanları](https://ui.shadcn.com/)
+
+## 🎨 Theme Components
+
+### Theme Provider
+
+Dark/light mode desteği.
+
+```typescript
+<ThemeProvider defaultTheme="system">
+  <App />
+</ThemeProvider>
+```
+
+### Theme Toggle
+
+Tema değiştirme butonu.
+
+```typescript
+import { ThemeToggle } from '@/components/theme-toggle'
+
+<ThemeToggle />
+```
+
+## 🔧 Custom Components
+
+Proje-specific componentler ihtiyaç halinde `src/components/` altına eklenebilir.
+

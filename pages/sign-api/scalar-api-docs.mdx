@@ -1,0 +1,75 @@
+# 🎨 Scalar API Documentation
+
+Bu proje, API dokümantasyonu için **Scalar** kullanmaktadır. Scalar, modern ve kullanıcı dostu bir OpenAPI dokümantasyon arayüzüdür.
+
+## 🌟 Neden Scalar?
+
+### Swagger UI'ye Göre Avantajları
+
+- ✅ **Modern ve Şık Tasarım**: Daha temiz ve profesyonel görünüm
+- ✅ **Dark Mode**: Göz yormayan karanlık tema desteği
+- ✅ **Daha İyi UX**: Geliştirilmiş kullanıcı deneyimi ve navigasyon
+- ✅ **Hızlı ve Performanslı**: Daha hızlı yükleme ve responsive tasarım
+- ✅ **Interactive API Playground**: Endpoint'leri kolayca test edebilme
+- ✅ **Otomatik Code Generation**: Çoklu dil için otomatik kod örnekleri
+- ✅ **Mobile Uyumlu**: Mobil cihazlarda mükemmel görünüm
+
+## 🚀 Erişim
+
+```bash
+# Uygulamayı başlat
+mvn spring-boot:run
+
+# Tarayıcıda aç
+http://localhost:8085/
+```
+
+## 📋 Özellikler
+
+### 1. Interactive API Explorer
+- Endpoint'leri doğrudan tarayıcıdan test edebilirsiniz
+- Request/Response örneklerini görebilirsiniz
+- Farklı parametrelerle deneme yapabilirsiniz
+
+### 2. Otomatik Kod Örnekleri
+Scalar otomatik olarak kod örnekleri oluşturur:
+- cURL
+- JavaScript (Fetch, Axios)
+- Python (Requests)
+- Java (OkHttp, Apache HttpClient)
+- Go, PHP, Ruby, C#
+
+### 3. Dark Mode
+Göz yormayan karanlık tema varsayılan olarak aktiftir.
+
+## ⚙️ Yapılandırma
+
+```javascript
+{
+    "theme": "purple",           // Tema rengi
+    "darkMode": true,            // Karanlık mod aktif
+    "layout": "modern",          // Modern layout
+    "showSidebar": true          // Yan panel göster
+}
+```
+
+## 🔧 OpenAPI Endpoint
+
+```
+http://localhost:8085/api-docs
+```
+
+## 📱 Postman Entegrasyonu
+
+```bash
+# OpenAPI JSON'ı indir
+curl http://localhost:8085/api-docs -o sign-api-openapi.json
+
+# Postman'de Import → File → sign-api-openapi.json
+```
+
+## 📚 Daha Fazla Bilgi
+
+- [Scalar Documentation](https://github.com/scalar/scalar)
+- [OpenAPI Specification](https://swagger.io/specification/)
+

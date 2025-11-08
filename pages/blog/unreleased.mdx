@@ -1,0 +1,40 @@
+# Geliştirilmekte Olan Özellikler
+
+**📅 Devam Eden Geliştirme**
+
+Henüz yayınlanmamış, aktif geliştirme aşamasındaki özellikler.
+
+## 🆕 Yeni Özellikler
+
+### 🔐 Sertifika Listeleme API'si
+
+Keystore sertifikalarını görüntüleme ve bilgi alma.
+
+**Endpoint'ler:**
+- `GET /api/certificates/list` - Tüm sertifikaları listele
+- `GET /api/certificates/info` - Keystore bilgileri
+
+**Özellikler:**
+- ✅ Detaylı sertifika bilgileri (alias, serial, subject, issuer)
+- ✅ Key usage ve extended key usage bilgileri
+- ✅ Certificate policies ve CPS URL'leri
+- ✅ Private key varlık kontrolü
+- ✅ JSON formatında yapılandırılmış yanıt
+- ✅ Swagger/OpenAPI entegrasyonu
+
+### 🌐 CORS Yapılandırması İyileştirildi
+
+Timestamp ve imza header'ları CORS exposed headers'a eklendi:
+- `X-Timestamp-Time`
+- `X-Timestamp-TSA`
+- `X-Timestamp-Serial`
+- `X-Timestamp-Hash-Algorithm`
+- `Content-Disposition`
+- `x-signature-value`
+
+---
+
+## 📅 Tahmini Tamamlanma
+
+**Aralık 2025** - Bu özellikler aktif geliştirme aşamasında. Takip için [GitHub](https://github.com/your-repo) sayfasını ziyaret edin.
+

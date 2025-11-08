@@ -1,0 +1,70 @@
+# ⏰ Zaman Damgası (Timestamp)
+
+RFC 3161 standardına uygun zaman damgası alma ve doğrulama.
+
+## Genel Bakış
+
+Herhangi bir binary belge için RFC 3161 uyumlu zaman damgası almanızı ve doğrulamanızı sağlar.
+
+## ✅ Özellikler
+
+- RFC 3161 tam uyumluluk
+- Binary response (%25 bandwidth tasarrufu)
+- Metadata HTTP header'larda
+- TÜBİTAK ESYA desteği
+- Çoklu hash algoritması (SHA-256, SHA-384, SHA-512)
+
+## 🔧 Yapılandırma
+
+```bash
+# Timestamp server
+TS_SERVER_HOST=http://zd.kamusm.gov.tr
+
+# TÜBİTAK için
+IS_TUBITAK_TSP=true
+TS_USER_ID=123456
+TS_USER_PASSWORD=your_password
+```
+
+## 📡 API Endpoint'leri
+
+### 1. Timestamp Alma
+
+**Endpoint:** `POST /api/timestamp/get`
+
+```bash
+curl -X POST http://localhost:8085/api/timestamp/get \
+  -F "document=@document.pdf" \
+  -F "hashAlgorithm=SHA256" \
+  -o timestamp.tst
+```
+
+### 2. Timestamp Doğrulama
+
+**Endpoint:** `POST /api/timestamp/validate`
+
+```bash
+curl -X POST http://localhost:8085/api/timestamp/validate \
+  -F "timestampToken=@timestamp.tst" \
+  -F "originalDocument=@document.pdf" | jq .
+```
+
+### 3. Servis Durumu
+
+**Endpoint:** `GET /api/timestamp/status`
+
+```bash
+curl http://localhost:8085/api/timestamp/status | jq .
+```
+
+## 🎯 Kullanım Örnekleri
+
+[Örnekler](/examples/curl) sayfasında detaylı kullanım örnekleri bulabilirsiniz.
+
+## 🔒 Güvenlik
+
+- Minimum SHA-256 hash algoritması kullanın
+- Nonce kullanımı önerilir
+- TSA sertifikası geçerliliğini kontrol edin
+- Token'ları güvenli saklayın
+

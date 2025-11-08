@@ -1,0 +1,79 @@
+# 🐳 Docker Deployment
+
+Sign API'yi Docker ve Docker Compose ile çalıştırma rehberi.
+
+## 🚀 Hızlı Başlangıç
+
+```bash
+cd devops/docker
+docker-compose up -d
+```
+
+**Erişim:**
+- Sign API: http://localhost:8085
+- Prometheus: http://localhost:9090
+- Grafana: http://localhost:3000
+
+## 📦 Docker Image
+
+### Build
+
+```bash
+docker build -f devops/docker/Dockerfile -t mersel-dss-signer-api:0.1.0 .
+```
+
+### Multi-stage Build
+
+- **Stage 1:** Maven build
+- **Stage 2:** JRE runtime (~250MB)
+
+## 🏃 Docker Run
+
+```bash
+docker run -d \
+  --name sign-api \
+  -p 8085:8085 \
+  -e PFX_PATH=/app/certs/certificate.pfx \
+  -e CERTIFICATE_PIN=your-password \
+  -v $(pwd)/certs:/app/certs:ro \
+  mersel-dss-signer-api:0.1.0
+```
+
+## 🔧 Environment Variables
+
+| Variable | Açıklama | Örnek |
+|----------|----------|-------|
+| `PFX_PATH` | PFX dosya yolu | `/app/certs/cert.pfx` |
+| `CERTIFICATE_PIN` | Sertifika parolası | `your-password` |
+| `CERTIFICATE_ALIAS` | Sertifika alias | `1` veya `my-cert` |
+| `IS_TUBITAK_TSP` | TÜBİTAK timestamp | `true` |
+| `JAVA_OPTS` | JVM options | `-Xmx2g` |
+
+## 📊 Monitoring Stack
+
+```bash
+cd devops/docker
+docker-compose up -d
+```
+
+Şunlar başlatılır:
+- Sign API
+- Prometheus
+- Grafana (Dashboard ID: **11378**)
+- AlertManager (optional)
+
+## 🔍 Container Yönetimi
+
+```bash
+# Status
+docker-compose ps
+
+# Logs
+docker-compose logs -f sign-api
+
+# Shell
+docker-compose exec sign-api /bin/sh
+```
+
+Detaylı Docker kullanımı için [Getting Started → Docker](/getting-started/docker) sayfasına bakın.
+

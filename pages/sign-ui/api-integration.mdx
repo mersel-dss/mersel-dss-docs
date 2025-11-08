@@ -1,0 +1,167 @@
+# API Entegrasyonu
+
+Sign UI, backend API ile OpenAPI generated client üzerinden iletişim kurar.
+
+## 🤖 OpenAPI Client
+
+### Otomatik Generated Client
+
+Backend'in OpenAPI spesifikasyonundan otomatik olarak TypeScript client generate edilir.
+
+```bash
+# API client'ı yeniden generate et
+curl -s http://localhost:8085/api-docs -o openapi.json
+npx openapi-typescript-codegen --input ./openapi.json --output ./src/api/generated
+rm openapi.json
+```
+
+### Yapı
+
+```
+src/api/generated/
+├── core/           # OpenAPI client core
+├── models/         # DTO type definitions
+│   ├── SignPadesDto.ts
+│   ├── SignXadesDto.ts
+│   ├── SignWsSecurityDto.ts
+│   └── ...
+└── services/       # API service methods
+    ├── PadesControllerService.ts
+    ├── XadesControllerService.ts
+    └── ...
+```
+
+## 🎣 Custom Hooks
+
+### useSignPDF
+
+PDF imzalama hook'u.
+
+```typescript
+import { useSignPDF } from '@/hooks/use-sign'
+
+const { mutate: signPDF, isLoading } = useSignPDF()
+
+signPDF({
+  document: file,
+  appendMode: false
+})
+```
+
+### useSignXML
+
+XML imzalama hook'u.
+
+```typescript
+import { useSignXML } from '@/hooks/use-sign'
+
+const { mutate: signXML } = useSignXML()
+
+signXML({
+  document: file,
+  documentType: 'UblDocument'
+})
+```
+
+### useCertificates
+
+Sertifika listesi hook'u.
+
+```typescript
+import { useCertificates } from '@/hooks/use-certificates'
+
+const { data: certificates, isLoading } = useCertificates()
+```
+
+### useTimestamp
+
+Timestamp hook'u.
+
+```typescript
+import { useGetTimestamp } from '@/hooks/use-timestamp'
+
+const { mutate: getTimestamp } = useGetTimestamp()
+
+getTimestamp({
+  document: file,
+  hashAlgorithm: 'SHA256'
+})
+```
+
+## ⚙️ API Configuration
+
+### Base URL
+
+`src/lib/api-config.ts`:
+
+```typescript
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8085'
+
+OpenAPI.BASE = API_BASE_URL
+```
+
+### Environment Variables
+
+`.env`:
+
+```bash
+VITE_API_BASE_URL=http://localhost:8085
+```
+
+## 📦 Services
+
+### Generated Services
+
+- `PadesControllerService` - PDF imzalama
+- `XadesControllerService` - XML imzalama
+- `CertificateInfoService` - Sertifika yönetimi
+- `TimestampService` - Zaman damgası
+- `TBTakService` - TÜBİTAK servisleri
+
+### Kullanım Örneği
+
+```typescript
+import { PadesControllerService } from '@/api/generated'
+
+const response = await PadesControllerService.signPades({
+  document: file,
+  appendMode: false
+})
+```
+
+## 🔄 React Query
+
+State management için TanStack Query kullanılır.
+
+```typescript
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+      staleTime: 5 * 60 * 1000
+    }
+  }
+})
+```
+
+## 📝 Type Safety
+
+Tüm API istekleri TypeScript tip güvenliği ile:
+
+```typescript
+// DTO'lar otomatik generate edilir
+const signRequest: SignPadesDto = {
+  document: file,
+  appendMode: false
+}
+
+// Type-safe API call
+const response = await PadesControllerService.signPades(signRequest)
+```
+
+## 🔗 İlgili Dökümanlar
+
+- [Sign API Reference](/sign-api)
+- [Component Rehberi](/sign-ui/components)
+

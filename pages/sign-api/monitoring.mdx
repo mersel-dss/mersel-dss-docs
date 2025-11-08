@@ -1,0 +1,59 @@
+# 📊 Monitoring ve Metrics
+
+Sign API için Prometheus ve Grafana monitoring rehberi.
+
+## 🎯 Hızlı Başlangıç
+
+### Prometheus Metrics
+
+```bash
+curl http://localhost:8085/actuator/prometheus
+```
+
+### Grafana Dashboard
+
+**Dashboard ID:** `11378` (Spring Boot 2.x)
+
+1. Grafana'ya girin: http://localhost:3000
+2. Import → Dashboard ID: **11378**
+3. Prometheus seçin → Import
+
+## 🔧 Prometheus Yapılandırması
+
+```yaml
+scrape_configs:
+  - job_name: 'sign-api'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['localhost:8085']
+```
+
+## 📈 Önemli Metrikler
+
+### Request Rate
+```promql
+rate(http_server_requests_seconds_count{uri="/v1/xadessign"}[5m])
+```
+
+### Error Rate
+```promql
+rate(http_server_requests_seconds_count{status=~"5.."}[5m])
+```
+
+### Memory Usage
+```promql
+jvm_memory_used_bytes{area="heap"}
+```
+
+## 🚨 Alert Rules
+
+```yaml
+- alert: SignApiDown
+  expr: up{job="sign-api"} == 0
+  for: 1m
+  labels:
+    severity: critical
+```
+
+Detaylı alert rules ve monitoring setup için [DevOps → Monitoring](/devops/monitoring) sayfasına bakın.
+

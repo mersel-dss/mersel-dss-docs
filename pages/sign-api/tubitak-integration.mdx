@@ -1,0 +1,79 @@
+# 🇹🇷 TÜBİTAK ESYA Entegrasyonu
+
+TÜBİTAK ESYA zaman damgası sunucusu entegrasyonu.
+
+## Genel Bakış
+
+TÜBİTAK ESYA, RFC 3161 protokolüne ek olarak özel kimlik doğrulama mekanizması kullanır.
+
+## 🔐 Kimlik Doğrulama
+
+### Adımlar
+
+1. RFC 3161 TimeStampReq oluşturulur
+2. Hash değeri çıkarılır
+3. Authentication token oluşturulur:
+   - PBKDF2WithHmacSHA256 ile anahtar türetme
+   - AES-256-CBC şifreleme
+   - ASN.1 DER encoding
+   - Hexadecimal formata dönüşüm
+4. HTTP Header eklenir (`identity`)
+
+## ⚙️ Yapılandırma
+
+```bash
+# TÜBİTAK zaman damgası sunucusu
+TS_SERVER_HOST=http://zd.kamusm.gov.tr/
+
+# TÜBİTAK müşteri bilgileri
+TS_USER_ID=123456
+TS_USER_PASSWORD=your_password
+
+# TÜBİTAK modunu aktif et
+IS_TUBITAK_TSP=true
+```
+
+## 📊 Kontör Sorgulama
+
+```bash
+curl http://localhost:8085/api/tubitak/credit
+```
+
+**Response:**
+```json
+{
+  "remainingCredit": 5432,
+  "customerId": 123456,
+  "message": "5432"
+}
+```
+
+## 🔧 Implementasyon Bileşenleri
+
+### TubitakAuthenticationHelper
+Kriptografik işlemler ve authentication token oluşturma.
+
+### TubitakTimestampDataLoader
+DSS TimestampDataLoader'ı extend eder, identity header'ı ekler.
+
+### TimestampConfigurationService
+Yapılandırmaya göre doğru DataLoader'ı seçer.
+
+## 🐛 Sorun Giderme
+
+### "Identity header invalid"
+
+- Müşteri ID ve password doğruluğunu kontrol edin
+- `TS_USER_ID` sayısal olmalı
+
+### HTTP 401/403
+
+- Kullanıcı kimlik bilgilerini kontrol edin
+- TÜBİTAK hesabı aktif mi kontrol edin
+
+## 📚 Referanslar
+
+- [RFC 3161 - Time-Stamp Protocol](https://www.ietf.org/rfc/rfc3161.txt)
+- [BouncyCastle](https://www.bouncycastle.org/)
+- [DSS Framework](https://github.com/esig/dss)
+

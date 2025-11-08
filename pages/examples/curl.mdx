@@ -1,0 +1,21 @@
+# cURL Örnekleri
+
+Sign API cURL kullanım örnekleri.
+
+## XAdES İmzalama
+
+```bash
+curl -X POST http://localhost:8085/v1/xadessign \
+  -F "document=@efatura.xml" \
+  -F "documentType=UblDocument" \
+  -o signed.xml
+```
+
+## PAdES İmzalama
+
+```bash
+curl -X POST http://localhost:8085/v1/padessign \
+  -F "document=@document.pdf" \
+  -o signed.pdf
+```
+

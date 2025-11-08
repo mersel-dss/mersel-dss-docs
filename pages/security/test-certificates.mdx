@@ -1,0 +1,63 @@
+# 🔐 Test Sertifikaları
+
+Hızlı başlatma ve test için hazır PFX sertifikaları.
+
+## ⚠️ ÖNEMLİ UYARI
+
+**Bu test sertifikaları SADECE geliştirme ve test ortamları içindir.**
+
+**❌ Production ortamında ASLA kullanmayın!**
+
+## 📦 Mevcut Test Sertifikaları
+
+| Sertifika | Parola | Konum |
+|-----------|--------|-------|
+| `testkurum01@test.com.tr_614573.pfx` | `614573` | `resources/test-certs/` |
+| `testkurum02@sm.gov.tr_059025.pfx` | `059025` | `resources/test-certs/` |
+| `testkurum3@test.com.tr_181193.pfx` | `181193` | `resources/test-certs/` |
+
+💡 **İpucu:** Dosya isminde `_` karakterinden sonraki kısım paroladır.
+
+## 🚀 Hızlı Başlatma
+
+### Unix/Linux/macOS
+```bash
+./scripts/unix/quick-start-with-test-certs.sh
+```
+
+### Windows
+```powershell
+.\scripts\windows\quick-start-with-test-certs.ps1
+```
+
+## 🧪 Manuel Test
+
+```bash
+export PFX_PATH=./resources/test-certs/testkurum01@test.com.tr_614573.pfx
+export CERTIFICATE_PIN=614573
+export CERTIFICATE_ALIAS=1
+export IS_TUBITAK_TSP=false
+
+mvn spring-boot:run
+```
+
+## 🔍 Sertifika Bilgilerini Görme
+
+```bash
+keytool -list -v -keystore resources/test-certs/testkurum01@test.com.tr_614573.pfx \
+  -storetype PKCS12 -storepass 614573
+```
+
+## ⚠️ Önemli Notlar
+
+1. **Sadece Test Amaçlı** - Production'da kullanmayın
+2. **Güvenlik** - Parolalar dosya isimlerinde görünür
+3. **Self-Signed** - Güvenilir CA tarafından imzalanmamış
+4. **Timestamp** - TÜBİTAK timestamp kullanmanız önerilmez
+
+## 📚 İlgili Dökümanlar
+
+- [Hızlı Başlangıç](/getting-started/quick-start)
+- [Sertifika Seçimi](/sign-api/certificate-selection)
+- [Güvenlik](/security/best-practices)
+

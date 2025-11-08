@@ -1,0 +1,88 @@
+# 🔍 Spring Boot Actuator Endpoints
+
+Sign API, izleme ve sağlık kontrolü için Spring Boot Actuator endpoint'leri içerir.
+
+## 📊 Mevcut Endpoint'ler
+
+### 1. Health Check
+
+API'nin sağlığını kontrol eder.
+
+**URL:** `http://localhost:8085/actuator/health`
+
+```bash
+curl http://localhost:8085/actuator/health
+```
+
+**Yanıt:**
+```json
+{
+  "status": "UP"
+}
+```
+
+### 2. Application Info
+
+**URL:** `http://localhost:8085/actuator/info`
+
+```json
+{
+  "app": {
+    "name": "Mersel DSS Signer API",
+    "description": "Dijital Imza Servisi API",
+    "version": "0.1.0"
+  }
+}
+```
+
+### 3. Prometheus Metrics
+
+**URL:** `http://localhost:8085/actuator/prometheus`
+
+```bash
+# Tüm metrics
+curl http://localhost:8085/actuator/prometheus
+
+# Belirli metric filtrele
+curl -s http://localhost:8085/actuator/prometheus | grep "http_server_requests"
+```
+
+## 🔧 Yapılandırma
+
+```properties
+# Actuator Configuration
+management.endpoints.web.exposure.include=health,info,prometheus,metrics
+management.health.defaults.enabled=true
+management.metrics.export.prometheus.enabled=true
+```
+
+## 📊 Kubernetes ile Kullanım
+
+### Liveness Probe
+
+```yaml
+livenessProbe:
+  httpGet:
+    path: /actuator/health
+    port: 8085
+  initialDelaySeconds: 30
+  periodSeconds: 10
+```
+
+### Readiness Probe
+
+```yaml
+readinessProbe:
+  httpGet:
+    path: /actuator/health
+    port: 8085
+  initialDelaySeconds: 20
+  periodSeconds: 5
+```
+
+## 📈 Grafana Dashboard
+
+**Dashboard ID: 11378** - Spring Boot 2.x için önerilir
+
+Detaylar için [Monitoring](/devops/monitoring) sayfasına bakın.
+

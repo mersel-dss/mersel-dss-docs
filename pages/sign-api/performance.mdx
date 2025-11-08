@@ -1,0 +1,51 @@
+# ⚡ Performans Optimizasyonu
+
+Production ortamında optimal performans için yapılandırma rehberi.
+
+## 📊 Performans Metrikleri
+
+- **HSM ile:** 50-250 imza/saniye
+- **PFX ile:** 20-100 imza/saniye
+- **Eşzamanlılık:** `MAX_SESSION_COUNT` ile sınırlı
+
+## ⚙️ JVM Ayarları
+
+### Önerilen Parametreler
+
+```bash
+java -Xms512m \
+     -Xmx2048m \
+     -XX:+UseG1GC \
+     -XX:MaxGCPauseMillis=200 \
+     -XX:ParallelGCThreads=4 \
+     -Djava.security.egd=file:/dev/./urandom \
+     -jar mersel-dss-signer-api-0.1.0.jar
+```
+
+### Yüksek Performans (16+ core)
+
+```bash
+java -Xms2g -Xmx8g \
+     -XX:+UseG1GC \
+     -XX:ParallelGCThreads=8 \
+     -jar sign-api.jar
+```
+
+## 🔧 Application Properties
+
+```properties
+# Eşzamanlı İmzalama
+MAX_SESSION_COUNT=10
+
+# Thread Pool
+server.tomcat.threads.max=200
+server.tomcat.threads.min-spare=20
+
+# Connection Timeouts
+server.connection-timeout=60s
+```
+
+## 📊 Monitoring
+
+Performance metrikleri için [Monitoring](/sign-api/monitoring) sayfasına bakın.
+

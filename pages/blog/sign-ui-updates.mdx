@@ -1,0 +1,122 @@
+# Sign UI Güncellemeleri 🎨
+
+**📅 7 Kasım 2025**
+
+Modern topbar layout, OpenAPI client entegrasyonu ve type-safe API calls!
+
+## ✅ OpenAPI TypeScript Client
+
+**Önceki durum:**
+- Manuel yazılmış API client
+- Hardcoded tipleri
+- Base64 string veri iletişimi
+
+**Yeni durum:**
+- ✅ `openapi-typescript-codegen` ile otomatik client
+- ✅ Type-safe API çağrıları
+- ✅ Gerçek DTO'lar (`SignPadesDto`, `SignXadesDto`)
+- ✅ FormData ve Blob kullanımı
+
+**Generated Client:**
+```
+src/api/generated/
+├── models/         # DTO tanımları
+├── services/       # API servisleri
+└── core/           # Client core
+```
+
+## 🎨 Modern Topbar Layout
+
+**Önceki:** Sol sidebar navigation  
+**Yeni:** Üst topbar navigation
+
+**Özellikler:**
+- ✅ Horizontal menü
+- ✅ Sticky header
+- ✅ Real-time status indicators
+- ✅ Daha geniş içerik alanı
+- ✅ Responsive tasarım
+
+## 🔌 Tüm Sayfalar API Entegrasyonu
+
+### PDF İmzalama
+- `SignPadesDto` kullanıyor
+- File upload (FormData)
+- Blob response handling
+- Otomatik PDF indirme
+
+### XML İmzalama
+- `SignXadesDto` kullanıyor
+- `DocumentType` enum desteği
+- ZIP option
+- Örnek XML yükleme
+
+### SOAP İmzalama
+- `SignWsSecurityDto` kullanıyor
+- SOAP 1.1/1.2 desteği
+
+### Timestamp
+- File-based timestamp alma
+- Validation (detaylı rapor)
+- `.tst` dosyası indirme
+
+### Sertifikalar
+- `CertificateInfoDto` kullanıyor
+- Detaylı bilgiler
+- Geçerlilik kontrolü
+
+### TÜBİTAK
+- `TubitakCreditResponseDto` kullanıyor
+- Kontör gösterimi
+- Otomatik refresh
+
+## 🎣 Custom Hooks Güncellemeleri
+
+```typescript
+// Generated client kullanıyor
+export const useSignPDF = () => {
+  return useMutation({
+    mutationFn: (data: SignPadesDto) => 
+      PadesControllerService.signPades(data),
+  })
+}
+```
+
+## 📦 Yeni Paketler
+
+```json
+{
+  "devDependencies": {
+    "openapi-typescript-codegen": "^0.29.0"
+  }
+}
+```
+
+## 🗑️ Temizlik
+
+Kaldırılan eski dosyalar:
+- ❌ Eski sidebar components
+- ❌ Manuel API client
+- ❌ Eski layout components
+
+## 🔄 Client Yenileme
+
+Backend güncellendiğinde:
+
+```bash
+curl -s http://localhost:8085/api-docs -o openapi.json
+npx openapi-typescript-codegen --input ./openapi.json --output ./src/api/generated
+```
+
+## 🎯 UI/UX İyileştirmeleri
+
+1. **Modern Topbar**
+2. **Temiz Layout**
+3. **Better User Feedback** (loading, alerts)
+4. **Responsive Design**
+
+---
+
+**📅 Yayın Tarihi:** 7 Kasım 2025  
+**Tech Stack:** React 19, Vite 7, TypeScript, Tailwind 4
+

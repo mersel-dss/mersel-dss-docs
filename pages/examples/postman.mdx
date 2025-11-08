@@ -1,0 +1,74 @@
+# 📮 Postman Kullanımı
+
+Sign API'yi Postman ile test etme rehberi.
+
+## 🔄 OpenAPI Import
+
+### Yöntem 1: URL ile (Önerilen)
+
+1. API'yi başlatın: `mvn spring-boot:run`
+2. Postman'de **Import** → **Link**
+3. URL: `http://localhost:8085/api-docs`
+4. **Import** tıklayın
+
+### Yöntem 2: Dosya ile
+
+```bash
+# OpenAPI JSON'ı indirin
+curl http://localhost:8085/api-docs -o sign-api-openapi.json
+
+# Postman → Import → File → sign-api-openapi.json
+```
+
+## ⚙️ Environment Variables
+
+Postman'de environment oluşturun:
+
+```json
+{
+  "baseUrl": "http://localhost:8085",
+  "port": "8085"
+}
+```
+
+## 📋 Örnek İstekler
+
+### e-Fatura İmzalama
+
+```
+POST {{baseUrl}}/v1/xadessign
+Content-Type: multipart/form-data
+
+document: [efatura.xml dosyası]
+documentType: UblDocument
+```
+
+### PDF İmzalama
+
+```
+POST {{baseUrl}}/v1/padessign
+Content-Type: multipart/form-data
+
+document: [document.pdf dosyası]
+appendMode: false
+```
+
+### Timestamp Alma
+
+```
+POST {{baseUrl}}/api/timestamp/get
+Content-Type: multipart/form-data
+
+document: [document.pdf dosyası]
+hashAlgorithm: SHA256
+```
+
+## 🧪 Test Senaryoları
+
+Postman Collection Runner ile toplu test senaryoları çalıştırabilirsiniz.
+
+## 📚 İlgili Dökümanlar
+
+- [cURL Örnekleri](/examples/curl)
+- [API Reference](/sign-api)
+

@@ -1,0 +1,58 @@
+# 🧪 Testing
+
+Sign API test stratejisi ve kullanım rehberi.
+
+## 📊 Test Coverage
+
+**Toplam:** 22 test (%100 başarılı)
+
+- Unit Tests: CryptoUtils, ErrorModel
+- Component Tests: SecurityConfiguration
+- Controller Tests: XadesController (mock)
+
+## 🚀 Testleri Çalıştırma
+
+```bash
+# Tüm testler
+mvn test
+
+# Belirli test sınıfı
+mvn test -Dtest=CryptoUtilsTest
+
+# Verbose
+mvn test -X
+```
+
+## 📝 Test Yazma
+
+```java
+@Test
+void testSignXades() {
+    // Given
+    String input = "test";
+    
+    // When
+    String result = service.sign(input);
+    
+    // Then
+    assertNotNull(result);
+}
+```
+
+## 🔌 Postman ile Test
+
+OpenAPI spesifikasyonunu Postman'e import edin:
+
+```bash
+curl http://localhost:8085/api-docs -o openapi.json
+# Postman → Import → openapi.json
+```
+
+## 🧪 Otomatik Test Script
+
+```bash
+./scripts/test-with-bundled-certs.sh
+```
+
+Bu script tüm endpoint'leri test eder.
+

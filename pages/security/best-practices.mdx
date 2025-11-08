@@ -1,0 +1,74 @@
+# 🔒 Güvenlik En İyi Pratikleri
+
+## ⚠️ Test Sertifikaları
+
+**UYARI:** Test sertifikaları SADECE geliştirme/test içindir!
+
+**Production'da ASLA test sertifikalarını kullanmayın!**
+
+## 🛡️ Production Kontrol Listesi
+
+- [ ] Resmi CA tarafından imzalanmış sertifika kullanılıyor
+- [ ] Sertifika zinciri tam ve geçerli
+- [ ] Test sertifikaları kaldırıldı
+- [ ] API Gateway/Reverse proxy arkasında
+- [ ] Rate limiting yapılandırılmış
+- [ ] Monitoring ve alerting kurulu
+
+## 🔐 Hassas Bilgi Yönetimi
+
+### Environment Variables
+
+```bash
+export CERTIFICATE_PIN="güvenli_pin"
+export TS_USER_PASSWORD="güvenli_parola"
+```
+
+### Secrets Manager
+
+Production için Vault, AWS Secrets Manager veya benzeri kullanın.
+
+## 🛡️ Network Güvenliği
+
+### API Gateway
+
+API'yi doğrudan internete açmayın:
+
+```
+Internet → API Gateway → Sign API
+           (Auth, Rate Limit)
+```
+
+### Firewall Rules
+
+```bash
+# Sadece internal network'ten erişim
+iptables -A INPUT -p tcp --dport 8085 -s 10.0.0.0/8 -j ACCEPT
+iptables -A INPUT -p tcp --dport 8085 -j DROP
+```
+
+## 🔍 Bilinen Güvenlik Konuları
+
+### ⚠️ Authentication Yok
+
+API şu anda authentication olmadan çalışır (internal use için).
+
+**Çözüm:**
+- Network seviyesinde güvenlik
+- API Gateway kullanımı
+- VPN veya private network
+
+### ⚠️ Rate Limiting Yok
+
+DoS koruması yok.
+
+**Çözüm:**
+- Nginx/Apache reverse proxy
+- API Gateway rate limiting
+- Application seviyesi Bucket4j
+
+## 📚 Referanslar
+
+- [OWASP Top 10](https://owasp.org/www-project-top-ten/)
+- [OWASP API Security](https://owasp.org/www-project-api-security/)
+

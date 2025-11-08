@@ -1,0 +1,70 @@
+# 💻 Kod Örnekleri
+
+Farklı programlama dillerinde Sign API kullanım örnekleri.
+
+## Bash/cURL
+
+Detaylı örnekler için [cURL Örnekleri](/examples/curl) sayfasına bakın.
+
+## JavaScript/TypeScript
+
+```typescript
+// PDF imzalama
+const formData = new FormData()
+formData.append('document', pdfFile)
+formData.append('appendMode', 'false')
+
+const response = await fetch('http://localhost:8085/v1/padessign', {
+  method: 'POST',
+  body: formData
+})
+
+const signedPdf = await response.blob()
+```
+
+## Python
+
+```python
+import requests
+
+# e-Fatura imzalama
+with open('efatura.xml', 'rb') as f:
+    files = {'document': f}
+    data = {'documentType': 'UblDocument'}
+    
+    response = requests.post(
+        'http://localhost:8085/v1/xadessign',
+        files=files,
+        data=data
+    )
+    
+    with open('signed-efatura.xml', 'wb') as out:
+        out.write(response.content)
+```
+
+## Java
+
+```java
+import okhttp3.*;
+
+MultipartBody requestBody = new MultipartBody.Builder()
+    .setType(MultipartBody.FORM)
+    .addFormDataPart("document", "document.pdf",
+        RequestBody.create(pdfFile, MediaType.parse("application/pdf")))
+    .addFormDataPart("appendMode", "false")
+    .build();
+
+Request request = new Request.Builder()
+    .url("http://localhost:8085/v1/padessign")
+    .post(requestBody)
+    .build();
+
+Response response = client.newCall(request).execute();
+```
+
+## 📚 Daha Fazla Örnek
+
+- [Scalar API Docs](http://localhost:8085/) - Otomatik kod örnekleri (8+ dil)
+- [cURL Örnekleri](/examples/curl)
+- [Postman Kullanımı](/examples/postman)
+

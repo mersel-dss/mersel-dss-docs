@@ -1,0 +1,126 @@
+# İlk Public Release 🎉
+
+**📅 7 Kasım 2025**
+
+Production-ready monitoring, Docker desteği, test sertifikaları ve çok daha fazlası!
+
+## 🎨 Scalar API Documentation
+
+Modern ve kullanıcı dostu API dokümantasyon arayüzü.
+
+- ✅ Swagger UI yerine Scalar
+- ✅ Dark mode ve modern tasarım
+- ✅ Interactive API playground
+- ✅ Otomatik kod örnekleri (8+ dil)
+- ✅ Mobile uyumlu
+
+[Detaylar →](/sign-api/scalar-api-docs)
+
+## ⏰ RFC 3161 Zaman Damgası Servisi
+
+Binary belgelere zaman damgası ekleme ve doğrulama.
+
+**Endpoint'ler:**
+- `POST /api/timestamp/get` - Timestamp alma
+- `POST /api/timestamp/validate` - Timestamp doğrulama
+- `GET /api/timestamp/status` - Servis durumu
+
+**Özellikler:**
+- ✅ RFC 3161 tam uyumluluk
+- ✅ Binary response (%25 bandwidth tasarrufu)
+- ✅ Metadata HTTP header'larda
+- ✅ TÜBİTAK ESYA desteği
+- ✅ Çoklu hash algoritması
+
+[Detaylar →](/sign-api/timestamp)
+
+## 🐳 Docker & Docker Compose
+
+Production-ready containerization.
+
+**Dockerfile:**
+- Multi-stage build (Maven + JRE)
+- Eclipse Temurin 8 JRE
+- Optimized layers
+- Non-root user
+- ~250MB image size
+
+**docker-compose.yml:**
+- Sign API service
+- Prometheus monitoring
+- Grafana visualization (Dashboard ID: **11378**)
+- AlertManager (optional)
+
+[Docker Rehberi →](/getting-started/docker)
+
+## 📊 Prometheus Metrics
+
+Production-grade monitoring desteği.
+
+**Endpoint:** `/actuator/prometheus`
+
+**Metrikler:**
+- HTTP request metrics (count, duration, percentiles)
+- JVM metrics (memory, GC, threads)
+- System metrics (CPU, disk, uptime)
+- Tomcat metrics
+
+[Monitoring Rehberi →](/devops/monitoring)
+
+## 🔐 Test Sertifikaları
+
+Geliştirme ortamı için hazır 3 test sertifikası.
+
+**Sertifikalar:**
+- `testkurum01@test.com.tr_614573.pfx` (Parola: 614573)
+- `testkurum02@sm.gov.tr_059025.pfx` (Parola: 059025)
+- `testkurum3@test.com.tr_181193.pfx` (Parola: 181193)
+
+**Hızlı Başlatma:**
+```bash
+./scripts/unix/quick-start-with-test-certs.sh
+```
+
+## 🔍 Actuator Endpoints
+
+Health check ve monitoring.
+
+- `/actuator/health` - Health check
+- `/actuator/info` - App bilgileri
+- `/actuator/prometheus` - Metrics
+
+[Actuator Rehberi →](/sign-api/actuator-endpoints)
+
+## 📦 Dependency Güncellemeleri
+
+Güvenlik ve stabilite için major güncellemeler (JDK 8 uyumlu):
+
+- Spring Boot: 2.3.7 → 2.7.18
+- Jackson: 2.11.2 → 2.15.3
+- BouncyCastle: 1.50 → 1.70
+- Apache HttpClient: 4.5.10 → 4.5.14
+
+## 🔒 Security
+
+- CORS yapılandırması production-ready
+- Security headers (X-Content-Type-Options, X-Frame-Options)
+- Güvenlik politikası dokümante edildi
+- Test sertifikaları güvenlik uyarıları
+
+---
+
+## 🚀 Roadmap
+
+### Q1 2026 (Planlanan)
+- Kubernetes manifests
+- Rate limiting
+- API Authentication
+- Asenkron imzalama
+- Batch imzalama
+
+### Q2 2026 (Planlanan)
+- CAdES imza desteği
+- WebSocket bildirimler
+- Kafka/RabbitMQ entegrasyonu
+- Dashboard UI
+

@@ -1,0 +1,83 @@
+# 🔧 DSS Kütüphanesi Override
+
+EU DSS kütüphanesinin Türkiye e-imza standartlarına (TÜBİTAK BES) uyarlanması.
+
+## Genel Bakış
+
+DSS kütüphanesi Avrupa standartlarına göre tasarlanmıştır. Türkiye'deki e-imza uygulamalarında bazı özelleştirmeler gerekmiştir.
+
+## 🔄 Override Edilen Sınıflar
+
+| Dosya | Ana Değişiklik |
+|-------|----------------|
+| `XAdESSignatureBuilder.java` | Reference sıralaması + KeyInfo + KeyValue |
+| `XAdESLevelBaselineT.java` | 76 karakter base64 satır sonları |
+| `XAdESLevelC.java` | OCSP/CRL cache + CRL Number |
+| `XAdESLevelXL.java` | Base64 formatı |
+| `XAdESLevelA.java` | Arşiv timestamp'leri |
+
+## ⚠️ Kritik Override'lar
+
+### 1. Reference Sıralaması
+
+**TÜBİTAK Sırası:**
+```xml
+<ds:SignedInfo>
+    <ds:Reference URI="#xades-...">      <!-- 1. SignedProperties -->
+    <ds:Reference URI="#r-data-001">     <!-- 2. Data -->
+    <ds:Reference URI="#keyInfo-...">    <!-- 3. KeyInfo -->
+</ds:SignedInfo>
+```
+
+### 2. KeyInfo - Sadece İmzacı Sertifikası
+
+```java
+// DSS orijinali: Tüm zincir
+// TÜBİTAK: Sadece imzacı
+List<CertificateToken> certificates = new ArrayList<>();
+certificates.add(params.getSigningCertificate());
+```
+
+### 3. KeyValue (RSAKeyValue) Ekleme
+
+```xml
+<ds:KeyInfo>
+    <ds:X509Data>...</ds:X509Data>
+    <ds:KeyValue>
+        <ds:RSAKeyValue>
+            <ds:Modulus>...</ds:Modulus>
+            <ds:Exponent>AQAB</ds:Exponent>
+        </ds:RSAKeyValue>
+    </ds:KeyValue>
+</ds:KeyInfo>
+```
+
+### 4. Base64 Satır Sonları (76 karakter)
+
+RFC 2045 standardı - 76 karakterde satır sonu.
+
+### 5. OCSP Cache Mekanizması
+
+XAdES-C ve XAdES-XL seviyelerinde digest eşleşmesi için.
+
+### 6. CRL Number
+
+İMZAGER uyumluluğu için CRL Number ekleme.
+
+## 📊 Kritiklik Tablosu
+
+| Override | Kritiklik | TÜBİTAK Uyumu |
+|----------|-----------|---------------|
+| Reference Sıralaması | 🔴 Kritik | Zorunlu |
+| KeyInfo Sertifikası | 🟡 Önemli | Zorunlu |
+| KeyValue | 🟡 Önemli | Zorunlu |
+| Base64 Satır Sonları | 🟡 Önemli | Zorunlu |
+| OCSP Cache | 🔴 Kritik | Digest için |
+| CRL Number | 🟡 Önemli | İMZAGER için |
+
+## 📚 Referanslar
+
+- [DSS Framework](https://github.com/esig/dss)
+- Lisans: LGPL v2.1
+- Override'lar kodda `########################OVERRIDE_DSS#########################` ile işaretli
+

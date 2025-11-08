@@ -1,0 +1,71 @@
+# ☸️ Kubernetes Deployment
+
+Kubernetes üzerinde Sign API deployment rehberi.
+
+## 🚧 Planlanan Özellik
+
+Kubernetes manifests v0.2.0'da gelecek.
+
+## 📝 Örnek Deployment
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sign-api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: sign-api
+  template:
+    metadata:
+      labels:
+        app: sign-api
+    spec:
+      containers:
+      - name: sign-api
+        image: mersel-dss-signer-api:0.1.0
+        ports:
+        - containerPort: 8085
+        env:
+        - name: PFX_PATH
+          value: "/app/certs/certificate.pfx"
+        - name: CERTIFICATE_PIN
+          valueFrom:
+            secretKeyRef:
+              name: cert-secrets
+              key: pin
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8085
+          initialDelaySeconds: 60
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8085
+          initialDelaySeconds: 30
+```
+
+## 🔒 Secrets
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cert-secrets
+type: Opaque
+stringData:
+  pin: "your-certificate-password"
+```
+
+## 📊 Monitoring
+
+Prometheus Operator ile monitoring kurulumu v0.2.0'da eklenecek.
+
+## 📚 İlgili Dökümanlar
+
+- [Docker Deployment](/devops/docker)
+- [Monitoring](/devops/monitoring)
+
