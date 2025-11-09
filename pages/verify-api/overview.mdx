@@ -4,19 +4,46 @@ Türkiye e-imza standartlarına uygun dijital imza doğrulama servisi.
 
 ## Özellikler
 
-- **PAdES (PDF) İmza Doğrulama** - PDF belgelerindeki dijital imzaları doğrulama
-- **XAdES (XML) İmza Doğrulama** - XML belgelerindeki dijital imzaları doğrulama
+### İmza Doğrulama
+
+- **PAdES (PDF) İmza Doğrulama** 
+  - PDF belgelerindeki dijital imzaları doğrulama
+  - CAdES tabanlı gömülü imza desteği
+  - Çoklu imza desteği
+
+- **XAdES (XML) İmza Doğrulama**
+  - XML belgelerindeki dijital imzaları doğrulama
   - Enveloped, Enveloping ve Detached imza desteği
-- **Zaman Damgası Doğrulama** - RFC 3161 uyumlu zaman damgası doğrulama
-- **Sertifika Zinciri Doğrulama** - Güvenilir root sertifikalara kadar doğrulama
-- **İptal Kontrolü** - OCSP ve CRL ile sertifika iptal durumu kontrolü
-- **Güvenilir Kök Sertifika Resolver Desteği** - Üç farklı resolver tipi
+  - e-Fatura, e-Arşiv gibi Türkiye standartlarına uyumluluk
+
+- **Zaman Damgası Doğrulama**
+  - RFC 3161 uyumlu zaman damgası token doğrulama
+  - Message imprint doğrulaması
+  - TSA sertifikası doğrulaması
+
+### Doğrulama Özellikleri
+
 - **İki Seviyeli Doğrulama**
-  - **Simple**: Hızlı, temel imza doğrulaması
-  - **Comprehensive**: Detaylı, tüm bilgileri içeren doğrulama
-- **Docker Desteği** - Kolay deployment
-- **Prometheus Metrics** - Monitoring ve metrikleme
+  - **SIMPLE**: Hızlı, temel imza doğrulaması - temel bilgileri döndürür
+  - **COMPREHENSIVE**: Detaylı doğrulama - sertifika, validation ve qualification detaylarını içerir
+
+- **Sertifika Zinciri Doğrulama**
+  - Güvenilir root sertifikalara kadar tam zincir doğrulaması
+  - KamuSM, e-Tugra gibi Türk CA'ları için özel destek
+
+- **Güvenilir Kök Sertifika Resolver**
+  - **Classpath Resolver**: JAR içindeki sertifikalar
+  - **Folder Resolver**: Dosya sisteminden sertifikalar  
+  - **Combined Resolver**: Her iki kaynağın kombinasyonu
+
+### Altyapı Özellikleri
+
+- **DSS Framework Entegrasyonu** - ETSI standardlarına tam uyumluluk
+- **Docker Desteği** - Kolay deployment ve ölçeklenebilirlik
+- **Prometheus Metrics** - Monitoring ve performans metrikleri
 - **OpenAPI Dokümantasyonu** - Scalar UI ile interaktif API dokümantasyonu
+- **Health Check Endpoint'leri** - Servis sağlık kontrolü
+- **Detaylı Loglama** - İşlem takibi ve hata ayıklama
 
 ## Hızlı Başlangıç
 
@@ -38,13 +65,17 @@ curl http://localhost:8086/api/v1/health
 
 ## API Endpoints
 
-- `POST /api/v1/verify/pades` - PAdES imza doğrulama
-- `POST /api/v1/verify/xades` - XAdES imza doğrulama
+### Doğrulama Endpoint'leri
+
+- `POST /api/v1/verify/pades/simple` - PAdES imza doğrulama
+- `POST /api/v1/verify/xades/simple` - XAdES imza doğrulama  
 - `POST /api/v1/verify/timestamp` - Zaman damgası doğrulama
-- `POST /api/v1/verify/pades/report/simple` - PAdES SimpleReport (JSON)
-- `POST /api/v1/verify/pades/report/detailed` - PAdES DetailedReport (XML)
-- `POST /api/v1/verify/xades/report/simple` - XAdES SimpleReport (JSON)
-- `POST /api/v1/verify/xades/report/detailed` - XAdES DetailedReport (XML)
+
+### Yönetim Endpoint'leri
+
+- `GET /api/v1/health` - Servis sağlık kontrolü
+- `GET /actuator/health` - Spring Boot Actuator health
+- `GET /actuator/prometheus` - Prometheus metrikleri
 
 ## Konfigürasyon
 

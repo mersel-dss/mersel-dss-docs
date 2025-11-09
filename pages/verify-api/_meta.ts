@@ -4,7 +4,6 @@ export default {
   "pades-verification": "PAdES Doğrulama",
   "xades-verification": "XAdES Doğrulama",
   "timestamp-verification": "Zaman Damgası Doğrulama",
-  "dss-reports": "DSS Raporları",
   "scalar-api-docs": "Scalar API Docs",
   "actuator-endpoints": "Actuator Endpoints",
   monitoring: "Monitoring",

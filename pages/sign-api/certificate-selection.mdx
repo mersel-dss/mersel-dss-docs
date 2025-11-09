@@ -1,16 +1,282 @@
 # Sertifika Seçimi
 
-PKCS#11 veya PFX keystore'dan sertifika seçim rehberi.
+PKCS#11 veya PFX keystore'dan sertifika seçimi ve yönetimi. Sign API, imzalama işlemleri için keystore'dan otomatik olarak sertifika seçer.
 
-## Alias ile Seçim
+## Keystore Tipleri
+
+### PKCS#11 (HSM / Akıllı Kart)
+
+PKCS#11 standardı, donanım güvenlik modülleri (HSM) ve akıllı kartlar için kullanılır.
+
+**Yapılandırma:**
 
 ```bash
-export CERTIFICATE_ALIAS=my-cert
+# PKCS#11 library path (işletim sistemine göre değişir)
+PKCS11_LIBRARY=/usr/lib/libpkcs11.so
+
+# Slot ID (varsayılan: 0)
+PKCS11_SLOT=0
+
+# PIN (keystore şifresi)
+CERTIFICATE_PIN=123456
+
+# Sertifika seçimi (alias veya serial number)
+CERTIFICATE_ALIAS=my-signing-cert
+# veya
+CERTIFICATE_SERIAL_NUMBER=1234567890ABCDEF
 ```
 
-## Serial Number ile Seçim
+**Platform Örnekleri:**
+
+```bash
+# Linux - OpenSC
+PKCS11_LIBRARY=/usr/lib/x86_64-linux-gnu/opensc-pkcs11.so
+
+# macOS
+PKCS11_LIBRARY=/usr/local/lib/opensc-pkcs11.so
+
+# Windows
+PKCS11_LIBRARY=C:\Windows\System32\akisp11.dll
+
+# SafeNet HSM
+PKCS11_LIBRARY=/opt/safenet/lib/libCryptoki2_64.so
+
+# Utimaco HSM
+PKCS11_LIBRARY=/opt/utimaco/lib/libcs_pkcs11_R2.so
+```
+
+### PFX/PKCS#12
+
+PFX dosyaları, özel anahtar ve sertifikayı tek bir dosyada saklar.
+
+**Yapılandırma:**
+
+```bash
+# PFX dosya yolu
+PFX_PATH=/path/to/certificate.pfx
+
+# PFX şifresi
+CERTIFICATE_PIN=password123
+
+# Sertifika seçimi (alias veya serial number)
+CERTIFICATE_ALIAS=my-cert
+# veya
+CERTIFICATE_SERIAL_NUMBER=ABCDEF1234567890
+```
+
+## Sertifika Seçim Yöntemleri
+
+### 1. Alias ile Seçim
+
+Keystore içindeki alias (takma ad) kullanılarak sertifika seçilir.
+
+```bash
+export CERTIFICATE_ALIAS=my-signing-cert
+```
+
+**Örnek alias değerleri:**
+- `signing-cert`
+- `e-fatura-cert`
+- `company-signature`
+
+### 2. Serial Number ile Seçim
+
+Sertifikanın serial number'ı (seri numarası) kullanılarak seçim yapılır.
 
 ```bash
 export CERTIFICATE_SERIAL_NUMBER=1234567890ABCDEF
 ```
+
+**Not:** Serial number hexadecimal formatta olmalıdır (büyük/küçük harf duyarsız).
+
+### 3. Otomatik Seçim
+
+Eğer keystore'da tek bir sertifika varsa, otomatik olarak seçilir. Alias veya serial number belirtmeye gerek yoktur.
+
+## API Endpoint'leri
+
+### Sertifika Listesi
+
+Keystore'daki tüm sertifikaları listeler. Bu endpoint ile alias ve serial number bilgilerini öğrenebilirsiniz.
+
+**Endpoint:** `GET /api/certificates/list`
+
+```bash
+curl http://localhost:8085/api/certificates/list | jq .
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "keystoreType": "PKCS11",
+  "certificateCount": 3,
+  "certificates": [
+    {
+      "alias": "signing-cert-1",
+      "serialNumber": "1234567890ABCDEF",
+      "subjectDN": "CN=John Doe, O=Company Inc, C=TR",
+      "issuerDN": "CN=E-Tugra CA, O=E-Tugra, C=TR",
+      "validFrom": "2024-01-01T00:00:00Z",
+      "validTo": "2025-12-31T23:59:59Z",
+      "keyUsage": ["digitalSignature", "nonRepudiation"]
+    },
+    {
+      "alias": "signing-cert-2",
+      "serialNumber": "FEDCBA0987654321",
+      "subjectDN": "CN=Jane Smith, O=Company Inc, C=TR",
+      "issuerDN": "CN=KamuSM CA, O=KamuSM, C=TR",
+      "validFrom": "2023-06-01T00:00:00Z",
+      "validTo": "2026-05-31T23:59:59Z",
+      "keyUsage": ["digitalSignature", "nonRepudiation"]
+    }
+  ]
+}
+```
+
+### Keystore Bilgileri
+
+Yapılandırılmış keystore hakkında genel bilgi döndürür.
+
+**Endpoint:** `GET /api/certificates/info`
+
+```bash
+curl http://localhost:8085/api/certificates/info | jq .
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "keystoreType": "PKCS11",
+  "library": "/usr/lib/x86_64-linux-gnu/opensc-pkcs11.so",
+  "slot": 0,
+  "certificateAlias": "signing-cert-1",
+  "certificateSerialNumber": "1234567890ABCDEF"
+}
+```
+
+## Kullanım Örnekleri
+
+### Örnek 1: PKCS#11 HSM ile İmzalama
+
+```bash
+# Environment variables
+export PKCS11_LIBRARY=/opt/safenet/lib/libCryptoki2_64.so
+export PKCS11_SLOT=0
+export CERTIFICATE_PIN=123456
+export CERTIFICATE_ALIAS=hsm-signing-cert
+
+# Servis başlat
+java -jar sign-api.jar
+```
+
+### Örnek 2: Akıllı Kart ile İmzalama
+
+```bash
+# Environment variables
+export PKCS11_LIBRARY=/usr/lib/x86_64-linux-gnu/opensc-pkcs11.so
+export PKCS11_SLOT=0
+export CERTIFICATE_PIN=1234
+
+# Sertifika listesini kontrol et
+curl http://localhost:8085/api/certificates/list | jq .
+
+# Serial number ile seçim yap
+export CERTIFICATE_SERIAL_NUMBER=ABCD1234567890EF
+
+# Servis başlat
+java -jar sign-api.jar
+```
+
+### Örnek 3: PFX Dosyası ile İmzalama
+
+```bash
+# Environment variables
+export PFX_PATH=/path/to/cert.pfx
+export CERTIFICATE_PIN=password123
+export CERTIFICATE_ALIAS=my-cert
+
+# Servis başlat
+java -jar sign-api.jar
+```
+
+### Örnek 4: Docker ile PKCS#11
+
+```bash
+# docker-compose.yml veya .env dosyası
+PKCS11_LIBRARY=/usr/lib/x86_64-linux-gnu/opensc-pkcs11.so
+PKCS11_SLOT=0
+CERTIFICATE_PIN=123456
+CERTIFICATE_ALIAS=signing-cert
+
+# USB cihaz mount edilmeli
+docker-compose up -d
+```
+
+## Sorun Giderme
+
+### "No certificate found with alias"
+
+**Sebep:** Belirtilen alias keystore'da bulunamadı.
+
+**Çözüm:**
+```bash
+# Sertifika listesini kontrol edin
+curl http://localhost:8085/api/certificates/list | jq .
+
+# Doğru alias'ı kullanın
+export CERTIFICATE_ALIAS=correct-alias-name
+```
+
+### "Certificate with serial number not found"
+
+**Sebep:** Belirtilen serial number keystore'da bulunamadı.
+
+**Çözüm:**
+```bash
+# Sertifika listesini kontrol edin ve doğru serial number'ı kopyalayın
+curl http://localhost:8085/api/certificates/list | jq '.certificates[].serialNumber'
+
+# Hexadecimal format kontrol edin (0x prefix olmadan)
+export CERTIFICATE_SERIAL_NUMBER=1234567890ABCDEF
+```
+
+### "PKCS11 library not found"
+
+**Sebep:** Belirtilen PKCS#11 library path yanlış veya dosya mevcut değil.
+
+**Çözüm:**
+```bash
+# Library dosyasının varlığını kontrol edin
+ls -la $PKCS11_LIBRARY
+
+# İşletim sistemine göre doğru path'i kullanın
+# Linux: /usr/lib/x86_64-linux-gnu/opensc-pkcs11.so
+# macOS: /usr/local/lib/opensc-pkcs11.so
+```
+
+### "PIN verification failed"
+
+**Sebep:** Hatalı PIN girişi.
+
+**Çözüm:**
+```bash
+# PIN'i kontrol edin
+# PKCS#11 cihazlar için genellikle 4-6 haneli sayısal PIN
+# PFX dosyaları için string password
+
+export CERTIFICATE_PIN=correct-pin
+```
+
+## Best Practices
+
+1. **Production Ortamı**: HSM kullanın, PFX dosyalarını production'da kullanmayın
+2. **Serial Number Kullanımı**: Alias yerine serial number ile seçim daha güvenilirdir (alias değişebilir)
+3. **PIN Güvenliği**: PIN'leri environment variable veya secret management sisteminde saklayın
+4. **Sertifika Geçerliliği**: Sertifika listesi endpoint'ini kullanarak geçerlilik tarihlerini kontrol edin
+5. **HSM Slot**: Birden fazla slot varsa doğru slot ID'yi kullanın
+6. **Key Usage**: İmzalama için `digitalSignature` veya `nonRepudiation` key usage'a sahip sertifika kullanın
 

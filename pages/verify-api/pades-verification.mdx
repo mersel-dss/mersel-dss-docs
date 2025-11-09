@@ -5,7 +5,7 @@ PAdES (PDF Advanced Electronic Signatures) formatındaki PDF belgelerindeki diji
 ## Endpoint
 
 ```
-POST /api/v1/verify/pades
+POST /api/v1/verify/pades/simple
 ```
 
 ## Request Parameters
@@ -14,9 +14,6 @@ POST /api/v1/verify/pades
 |-----------|-----|---------|------------|----------|
 | `signedDocument` | MultipartFile | ✅ | - | İmzalı PDF belgesi |
 | `level` | String | ❌ | `SIMPLE` | Doğrulama seviyesi: `SIMPLE` veya `COMPREHENSIVE` |
-| `validateCertificateChain` | Boolean | ❌ | `true` | Sertifika zinciri doğrulaması yapılsın mı |
-| `checkRevocation` | Boolean | ❌ | `false` | İptal kontrolü yapılsın mı (OCSP/CRL) |
-| `validateTimestamp` | Boolean | ❌ | `false` | Zaman damgası doğrulaması yapılsın mı |
 
 ## Response
 
@@ -80,16 +77,14 @@ POST /api/v1/verify/pades
 
 ```bash
 # Basit doğrulama
-curl -X POST http://localhost:8086/api/v1/verify/pades \
+curl -X POST http://localhost:8086/api/v1/verify/pades/simple \
   -F "signedDocument=@signed-document.pdf" \
   -F "level=SIMPLE"
 
 # Kapsamlı doğrulama
-curl -X POST http://localhost:8086/api/v1/verify/pades \
+curl -X POST http://localhost:8086/api/v1/verify/pades/simple \
   -F "signedDocument=@signed-document.pdf" \
-  -F "level=COMPREHENSIVE" \
-  -F "checkRevocation=true" \
-  -F "validateTimestamp=true"
+  -F "level=COMPREHENSIVE"
 ```
 
 ### JavaScript (Fetch)
@@ -98,10 +93,8 @@ curl -X POST http://localhost:8086/api/v1/verify/pades \
 const formData = new FormData();
 formData.append('signedDocument', fileInput.files[0]);
 formData.append('level', 'COMPREHENSIVE');
-formData.append('checkRevocation', 'true');
-formData.append('validateTimestamp', 'true');
 
-const response = await fetch('http://localhost:8086/api/v1/verify/pades', {
+const response = await fetch('http://localhost:8086/api/v1/verify/pades/simple', {
   method: 'POST',
   body: formData
 });
@@ -114,24 +107,27 @@ console.log(result);
 
 ### SIMPLE
 
-- Hızlı doğrulama
-- Temel bilgiler (valid/invalid, format, signing time)
-- Sertifika zinciri ve iptal kontrolü yapılır ancak detaylar döndürülmez
+- **Hızlı doğrulama** - Düşük latency, yüksek throughput
+- **Temel bilgiler** döndürür:
+  - İmza geçerlilik durumu (valid/invalid)
+  - İmza formatı (PAdES-BASELINE-B, PAdES-BASELINE-T, vb.)
+  - İmzalama zamanı
+  - İmza ID'leri
+- **Sertifika zinciri doğrulaması otomatik yapılır** ancak detaylar response'a dahil edilmez
+- **Kullanım senaryosu**: Toplu doğrulama, hızlı durum kontrolü
 
 ### COMPREHENSIVE
 
-- Detaylı doğrulama
-- Tüm bilgiler (sertifika zinciri, validation details, qualification details)
-- Sertifika bilgileri, iptal durumu, zaman damgası detayları
+- **Detaylı doğrulama** - Tam analiz ve raporlama
+- **Tüm bilgileri içerir**:
+  - Simple level bilgileri
+  - Sertifika detayları (Subject DN, Issuer DN, geçerlilik tarihleri)
+  - Doğrulama detayları (certificate chain valid, revocation checked, timestamp valid)
+  - Qualification details (QES, AdES, AdESQC)
+  - Indication ve SubIndication değerleri
+  - Hatalar ve uyarılar
+- **Sertifika zinciri tam olarak raporlanır**
+- **Kullanım senaryosu**: Detaylı analiz, compliance kontrolü, audit trail
 
-**Not:** `level` parametresi sadece response detay seviyesini belirler. Validation parametreleri (`checkRevocation`, `validateTimestamp`) her iki seviyede de bağımsız olarak kullanılabilir.
-
-## DSS Raporları
-
-DSS'in detaylı raporlarını almak için özel endpoint'ler kullanılabilir:
-
-- `POST /api/v1/verify/pades/report/simple` - SimpleReport (JSON)
-- `POST /api/v1/verify/pades/report/detailed` - DetailedReport (XML)
-
-Detaylar için [DSS Raporları](/verify-api/dss-reports) sayfasına bakın.
+**Not:** Her iki seviyede de sertifika zinciri doğrulaması DSS tarafından otomatik yapılır. `level` parametresi sadece response içeriğini etkiler.
 

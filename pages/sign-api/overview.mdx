@@ -1,11 +1,137 @@
 # Sign API - Genel Bakış
 
-Türkiye e-imza standartlarına uygun elektronik imza servisi.
+Türkiye e-imza standartlarına uygun elektronik imza servisi. DSS Framework tabanlı, ETSI standartlarına uyumlu dijital imzalama altyapısı.
 
 ## Özellikler
 
-- XAdES (XML İmzalama)
-- PAdES (PDF İmzalama)
-- WS-Security (SOAP İmzalama)
-- Zaman Damgası (RFC 3161)
+### İmzalama Yetenekleri
+
+- **PAdES (PDF İmzalama)**
+  - PDF belgelerine CAdES tabanlı gömülü imza
+  - Append mode desteği (mevcut imzaları koruyarak yeni imza ekleme)
+  - PDF attachment desteği
+  - Çoklu imza desteği
+
+- **XAdES (XML İmzalama)**
+  - e-Fatura, e-Arşiv Raporu, Uygulama Yanıtı formatları
+  - İrsaliye, HrXml ve diğer XML belge tipleri
+  - Enveloped signature
+  - Signature ID desteği
+  - ZIP arşiv desteği
+
+- **WS-Security (SOAP İmzalama)**
+  - SOAP 1.1 ve SOAP 1.2 desteği
+  - WS-Security standart uyumlu
+  - SOAP envelope imzalama
+
+### Zaman Damgası
+
+- **RFC 3161 Tam Uyumluluk**
+  - Binary belge için timestamp alma
+  - Timestamp token doğrulama
+  - Message imprint doğrulaması
+  - Çoklu hash algoritması (SHA-256, SHA-384, SHA-512)
+
+- **TÜBİTAK ESYA Desteği**
+  - Özel kimlik doğrulama mekanizması
+  - Kontör sorgulama
+  - PBKDF2 + AES-256-CBC authentication token
+
+### Sertifika Yönetimi
+
+- **Keystore Desteği**
+  - PKCS#11 (HSM, akıllı kart)
+  - PFX/PKCS#12
+  - Alias veya Serial Number ile sertifika seçimi
+  - Keystore sertifika listesi API'si
+
+### Altyapı Özellikleri
+
+- **Güvenilir Kök Sertifika Resolver**
+  - Classpath resolver
+  - Folder resolver
+  - Combined resolver
+  - KamuSM, e-Tugra gibi Türk CA desteği
+
+- **Monitoring ve Yönetim**
+  - Prometheus metrikleri
+  - Spring Boot Actuator
+  - Health check endpoint'leri
+  - Detaylı loglama
+
+- **Deployment**
+  - Docker desteği
+  - Docker Compose yapılandırması
+  - Kolay ölçeklenebilirlik
+
+## Hızlı Başlangıç
+
+### Docker ile Çalıştırma
+
+```bash
+cd devops/docker
+cp .env.example .env
+# .env dosyasını düzenleyin (keystore bilgileri, timestamp server, vb.)
+docker-compose up -d
+```
+
+Servis `http://localhost:8085` adresinde çalışmaya başlayacaktır.
+
+### Health Check
+
+```bash
+curl http://localhost:8085/actuator/health
+```
+
+## API Endpoints
+
+### İmzalama Endpoint'leri
+
+- `POST /v1/padessign` - PAdES (PDF) imzalama
+- `POST /v1/xadessign` - XAdES (XML) imzalama
+- `POST /v1/wssecuritysign` - WS-Security (SOAP) imzalama
+
+### Zaman Damgası Endpoint'leri
+
+- `POST /api/timestamp/get` - Timestamp alma
+- `POST /api/timestamp/validate` - Timestamp doğrulama
+- `GET /api/timestamp/status` - Timestamp servisi durumu
+
+### Sertifika Endpoint'leri
+
+- `GET /api/certificates/list` - Keystore sertifikalarını listele
+- `GET /api/certificates/info` - Keystore bilgilerini getir
+
+### TÜBİTAK Endpoint'leri
+
+- `GET /api/tubitak/credit` - TÜBİTAK kontör bilgisini sorgula
+
+### Yönetim Endpoint'leri
+
+- `GET /actuator/health` - Servis sağlık kontrolü
+- `GET /actuator/prometheus` - Prometheus metrikleri
+- `GET /actuator/info` - Uygulama bilgileri
+
+## Konfigürasyon
+
+Detaylı konfigürasyon bilgileri için ilgili sayfalara bakın:
+
+- [Sertifika Seçimi](/sign-api/certificate-selection) - Keystore yapılandırması
+- [Zaman Damgası](/sign-api/timestamp) - Timestamp server ayarları
+- [TÜBİTAK Entegrasyonu](/sign-api/tubitak-integration) - TÜBİTAK özel ayarları
+- [Güvenilir Kök Sertifika Resolver](/sign-api/trusted-root-resolver) - Root sertifika yapılandırması
+
+## OpenAPI Dokümantasyonu
+
+İnteraktif API dokümantasyonu için Scalar UI kullanılır:
+
+```
+http://localhost:8085/scalar/api-docs
+```
+
+Swagger UI alternatifi:
+
+```
+http://localhost:8085/swagger-ui.html
+```
 

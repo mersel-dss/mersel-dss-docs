@@ -12,9 +12,9 @@ POST /api/v1/verify/timestamp
 
 | Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
 |-----------|-----|---------|------------|----------|
-| `timestampToken` | MultipartFile | ✅ | - | Zaman damgası token dosyası (.tst) |
-| `dataToVerify` | MultipartFile | ✅ | - | Zaman damgası ile doğrulanacak veri |
-| `digestAlgorithm` | String | ❌ | `SHA-256` | Hash algoritması (SHA-256, SHA-384, SHA-512) |
+| `timestampToken` | MultipartFile | ✅ | - | Zaman damgası token dosyası (.tst veya .ts) |
+| `originalData` | MultipartFile | ❌ | - | Orijinal veri (message imprint doğrulaması için, opsiyonel) |
+| `validateCertificate` | Boolean | ❌ | `true` | TSA sertifikası doğrulaması yapılsın mı |
 
 ## Response
 
@@ -25,16 +25,17 @@ POST /api/v1/verify/timestamp
   "timestampTime": "2024-11-08T10:30:00Z",
   "tsaName": "CN=KamuSM TSA",
   "digestAlgorithm": "SHA-256",
-  "messageImprint": {
-    "hashAlgorithm": "SHA-256",
-    "hashedMessage": "a1b2c3d4..."
-  },
-  "certificate": {
+  "messageImprint": "a1b2c3d4...",
+  "tsaCertificate": {
     "subjectDN": "CN=KamuSM TSA",
     "issuerDN": "CN=KamuSM Root CA",
+    "serialNumber": "123456",
     "validFrom": "2024-01-01T00:00:00Z",
     "validTo": "2025-12-31T23:59:59Z"
-  }
+  },
+  "errors": [],
+  "warnings": [],
+  "verificationTime": "2024-11-09T12:00:00Z"
 }
 ```
 
@@ -43,10 +44,20 @@ POST /api/v1/verify/timestamp
 ### cURL
 
 ```bash
+# Sadece token doğrulama (sertifika ve format kontrolü)
+curl -X POST http://localhost:8086/api/v1/verify/timestamp \
+  -F "timestampToken=@timestamp.tst"
+
+# Orijinal veri ile message imprint doğrulaması
 curl -X POST http://localhost:8086/api/v1/verify/timestamp \
   -F "timestampToken=@timestamp.tst" \
-  -F "dataToVerify=@document.pdf" \
-  -F "digestAlgorithm=SHA-256"
+  -F "originalData=@document.pdf"
+
+# Sertifika doğrulaması olmadan
+curl -X POST http://localhost:8086/api/v1/verify/timestamp \
+  -F "timestampToken=@timestamp.tst" \
+  -F "originalData=@document.pdf" \
+  -F "validateCertificate=false"
 ```
 
 ### JavaScript (Fetch)
@@ -54,8 +65,8 @@ curl -X POST http://localhost:8086/api/v1/verify/timestamp \
 ```javascript
 const formData = new FormData();
 formData.append('timestampToken', timestampFile);
-formData.append('dataToVerify', dataFile);
-formData.append('digestAlgorithm', 'SHA-256');
+formData.append('originalData', originalDataFile); // Opsiyonel
+formData.append('validateCertificate', 'true'); // Varsayılan: true
 
 const response = await fetch('http://localhost:8086/api/v1/verify/timestamp', {
   method: 'POST',
@@ -69,15 +80,36 @@ console.log(result);
 ## Doğrulama Süreci
 
 1. **Token Format Kontrolü**: Zaman damgası token'ının geçerli bir RFC 3161 formatında olup olmadığı kontrol edilir
-2. **Message Imprint Kontrolü**: Token içindeki hash değeri ile verilen verinin hash'i karşılaştırılır
-3. **Sertifika Doğrulama**: TSA sertifikası güvenilir kök sertifikalara kadar doğrulanır
-4. **Zaman Kontrolü**: Zaman damgası zamanı kontrol edilir
+2. **İmza Doğrulama**: Token'ın dijital imzası doğrulanır
+3. **Sertifika Doğrulama** (validateCertificate=true ise): TSA sertifikası güvenilir kök sertifikalara kadar doğrulanır
+4. **Message Imprint Kontrolü** (originalData sağlanmışsa): Token içindeki hash değeri ile verilen verinin hash'i karşılaştırılır
+5. **Zaman Bilgisi**: Token içindeki zaman damgası bilgisi çıkarılır
 
-## Desteklenen Hash Algoritmaları
+## Doğrulama Seviyeleri
 
-- `SHA-256` (varsayılan)
-- `SHA-384`
-- `SHA-512`
+### Minimal Doğrulama (Sadece token)
+
+```bash
+curl -X POST http://localhost:8086/api/v1/verify/timestamp \
+  -F "timestampToken=@timestamp.tst"
+```
+
+- Token format kontrolü
+- İmza doğrulaması
+- TSA sertifika doğrulaması
+- **Kullanım senaryosu**: Token'ın geçerli olup olmadığını kontrol etmek
+
+### Tam Doğrulama (Token + Orijinal Veri)
+
+```bash
+curl -X POST http://localhost:8086/api/v1/verify/timestamp \
+  -F "timestampToken=@timestamp.tst" \
+  -F "originalData=@document.pdf"
+```
+
+- Minimal doğrulama
+- Message imprint doğrulaması
+- **Kullanım senaryosu**: Token'ın belirli bir veri için alındığını doğrulamak
 
 ## TÜBİTAK KamuSM TSA
 
