@@ -1,4 +1,4 @@
-import { Github, Newspaper, MessageSquare } from "lucide-react";
+import { Github, Newspaper, MessageSquare, ShieldCheck, BookOpen, Server, Layout, Puzzle, FileSignature } from "lucide-react";
 
 export default {
   "getting-started": {
@@ -39,17 +39,67 @@ export default {
     type: "page"
   },
   playground: {
-    title: <div className="flex items-center gap-2"><Github /> <span>Repositories</span></div>,
+    title: <div className="flex items-center gap-2"><Github className="w-4 h-4" /> <span>Repositories</span></div>,
     type: "menu",
     items: {
-      chat: {
+      verifierApi: {
         title: (
           <div className="flex items-center gap-2">
-            <MessageSquare className="w-4 h-4" />
-            <span>A.I. Chatbot</span>
+            <ShieldCheck className="w-4 h-4" />
+            <span>Doğrulama API (Java)</span>
           </div>
         ),
-        href: "/chat/playground",
+        href: "https://github.com/mersel-dss/mersel-dss-verifier-api-java",
+        newWindow: true,
+      },
+      docs: {
+        title: (
+          <div className="flex items-center gap-2">
+            <BookOpen className="w-4 h-4" />
+            <span>Dokümantasyon</span>
+          </div>
+        ),
+        href: "https://github.com/mersel-dss/mersel-dss-docs",
+        newWindow: true,
+      },
+      signerApi: {
+        title: (
+          <div className="flex items-center gap-2">
+            <Server className="w-4 h-4" />
+            <span>Sunucu İmzalama API (Java)</span>
+          </div>
+        ),
+        href: "https://github.com/mersel-dss/mersel-dss-server-signer-java",
+        newWindow: true,
+      },
+      ui: {
+        title: (
+          <div className="flex items-center gap-2">
+            <Layout className="w-4 h-4" />
+            <span>Kullanıcı Arayüzü (TypeScript)</span>
+          </div>
+        ),
+        href: "https://github.com/mersel-dss/mersel-dss-ui",
+        newWindow: true,
+      },
+      browserExtensions: {
+        title: (
+          <div className="flex items-center gap-2">
+            <Puzzle className="w-4 h-4" />
+            <span>Tarayıcı Eklentileri</span>
+          </div>
+        ),
+        href: "https://github.com/mersel-dss/dss-mersel-dss-agent-browser-extensions",
+        newWindow: true,
+      },
+      agentSigner: {
+        title: (
+          <div className="flex items-center gap-2">
+            <FileSignature className="w-4 h-4" />
+            <span>Agent İmzalama (Java)</span>
+          </div>
+        ),
+        href: "https://github.com/mersel-dss/mersel-dss-agent-signer-java",
         newWindow: true,
       },
     },
