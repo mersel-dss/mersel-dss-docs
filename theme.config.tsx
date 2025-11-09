@@ -13,12 +13,9 @@ const config: DocsThemeConfig = {
     defaultTheme: 'system',
   },
   project: {
-    link: "https://github.com/mersel-dss/mersel-dss",
+    link: "https://github.com/mersel-dss/mersel-dss-docs",
   },
-  chat: {
-    link: "https://discord.gg/E94XhzrUCZ",
-  },
-  docsRepositoryBase: "https://github.com/mersel-dss/mersel-dss",
+  docsRepositoryBase: "https://github.com/mersel-dss/mersel-dss-docs",
   footer: {
     content: () => (
       <span>
