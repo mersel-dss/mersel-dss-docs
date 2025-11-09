@@ -1,0 +1,85 @@
+# TÜBİTAK Entegrasyonu
+
+Verify API, TÜBİTAK KamuSM sertifikaları ve zaman damgası servisleri ile entegre çalışır.
+
+## KamuSM Root Sertifikaları
+
+Verify API, TÜBİTAK KamuSM root sertifikalarını kullanarak sertifika zinciri doğrulaması yapar. Güvenilir kök sertifikalar üç farklı yöntemle yüklenebilir:
+
+1. **Online**: İnternet üzerinden otomatik indirme
+2. **Offline**: Yerel dosya sisteminden okuma
+3. **Folder**: Klasördeki sertifika dosyalarından yükleme
+
+Detaylar için [Güvenilir Kök Sertifika Resolver](/verify-api/trusted-root-resolver) sayfasına bakın.
+
+## Zaman Damgası Doğrulama
+
+TÜBİTAK KamuSM zaman damgası servisleri ile oluşturulan zaman damgaları doğrulanabilir.
+
+### KamuSM TSA
+
+KamuSM zaman damgası servisi:
+- URL: `http://zd.kamusm.gov.tr`
+- RFC 3161 uyumlu
+- KamuSM root sertifikaları ile doğrulanır
+
+### Zaman Damgası Doğrulama
+
+```bash
+curl -X POST http://localhost:8086/api/v1/verify/timestamp \
+  -F "timestampToken=@timestamp.tst" \
+  -F "dataToVerify=@document.pdf" \
+  -F "digestAlgorithm=SHA-256"
+```
+
+Detaylar için [Zaman Damgası Doğrulama](/verify-api/timestamp-verification) sayfasına bakın.
+
+## Sertifika Doğrulama
+
+Verify API, TÜBİTAK KamuSM sertifikalarını doğrularken:
+
+1. **Sertifika Zinciri**: KamuSM root sertifikalara kadar doğrulanır
+2. **İptal Kontrolü**: OCSP ve CRL ile iptal durumu kontrol edilir
+3. **Zaman Damgası**: Zaman damgası geçerliliği kontrol edilir
+4. **Qualification Level**: Yasal seviye (QES, AdES/QC, AdES) belirlenir
+
+## Avrupa Trusted List Kontrolü
+
+Verify API, varsayılan olarak Avrupa Trusted List kontrolünü yapmaz. Sadece KamuSM/TÜBİTAK güvenilir kök sertifikaları kullanılır. Bu sayede:
+
+- Türkiye'ye özel sertifika doğrulaması
+- Avrupa Trusted List bağımlılığı yok
+- Offline ortamlarda çalışabilme
+
+## Konfigürasyon
+
+### KamuSM Root Sertifikaları
+
+```properties
+# Online mod (varsayılan)
+trusted.root.resolver.type=kamusm-online
+kamusm.root.url=http://depo.kamusm.gov.tr/depo/SertifikaDeposu.xml
+
+# Offline mod
+trusted.root.resolver.type=kamusm-offline
+kamusm.root.offline.path=/opt/certs/SertifikaDeposu.xml
+
+# Folder mod
+trusted.root.resolver.type=certificate-folder
+trusted.root.cert.folder.path=/opt/certificates
+```
+
+### Otomatik Yenileme
+
+```properties
+# Her gün saat 03:15'te yenile
+trusted.root.refresh-cron=0 15 3 * * *
+```
+
+## İlgili Dokümantasyon
+
+- [Güvenilir Kök Sertifika Resolver](/verify-api/trusted-root-resolver)
+- [PAdES Doğrulama](/verify-api/pades-verification)
+- [XAdES Doğrulama](/verify-api/xades-verification)
+- [Zaman Damgası Doğrulama](/verify-api/timestamp-verification)
+

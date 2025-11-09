@@ -44,6 +44,9 @@ function HomePage() {
               <Link href="/sign-api/overview" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
                 Sign API
               </Link>
+              <Link href="/verify-api/overview" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+                Verify API
+              </Link>
               <Link href="/sign-ui/overview" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
                 Sign UI
               </Link>
@@ -252,13 +255,20 @@ function HomePage() {
             />
             <ComponentCard
               icon={<Shield className="w-10 h-10" />}
-              title="Verifier API - İmza Doğrulama Servisi"
+              title="Verify API - İmza Doğrulama Servisi"
               description="Bağımsız, yüksek performanslı imza doğrulama servisi. Herhangi bir donanım bağımlılığı olmadan çalışır."
               features={[
                 'Donanım bağımlılığı yok',
                 'Horizontal scaling desteği',
                 'Yüksek performanslı doğrulama',
-                'PAdES, XAdES, CAdES desteği'
+                'PAdES, XAdES desteği',
+                'Güvenilir kök sertifika resolver sistemi',
+                'DSS SimpleReport ve DetailedReport desteği'
+              ]}
+              links={[
+                { text: 'API Dökümanları', href: '/verify-api/overview' },
+                { text: 'Scalar API Explorer', href: '/verify-api/scalar-api-docs' },
+                { text: 'GitHub Repo', href: 'https://github.com/mersel-dss/mersel-dss-verifier-api-java' }
               ]}
             />
           </div>
@@ -403,7 +413,12 @@ function HomePage() {
                 </li>
                 <li>
                   <Link href="/sign-api/overview" className="text-muted-foreground hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
-                    API Dökümanları
+                    Sign API Dökümanları
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/verify-api/overview" className="text-muted-foreground hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
+                    Verify API Dökümanları
                   </Link>
                 </li>
                 <li>

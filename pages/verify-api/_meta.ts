@@ -1,14 +1,15 @@
 export default {
   overview: "Genel Bakış",
   "trusted-root-resolver": "Güvenilir Kök Sertifika Resolver",
-  "certificate-selection": "Sertifika Seçimi",
+  "pades-verification": "PAdES Doğrulama",
+  "xades-verification": "XAdES Doğrulama",
+  "timestamp-verification": "Zaman Damgası Doğrulama",
+  "dss-reports": "DSS Raporları",
   "scalar-api-docs": "Scalar API Docs",
   "actuator-endpoints": "Actuator Endpoints",
   monitoring: "Monitoring",
   performance: "Performans",
   testing: "Testing",
-  timestamp: "Zaman Damgası",
-  "tubitak-integration": "TÜBİTAK Entegrasyonu",
-  "dss-override": "DSS Override"
+  "tubitak-integration": "TÜBİTAK Entegrasyonu"
 };
 

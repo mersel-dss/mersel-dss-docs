@@ -1,0 +1,65 @@
+# Testing
+
+Verify API için test stratejileri ve örnekleri.
+
+## Unit Tests
+
+JUnit 5 ve Mockito kullanılarak unit testler yazılmıştır.
+
+### Test Klasörü
+
+```
+src/test/java/io/mersel/dss/verify/api/
+├── controllers/
+│   └── PadesVerificationControllerTest.java
+├── services/
+│   └── verification/
+│       └── SignatureVerificationServiceTest.java
+└── VerifyApplicationTests.java
+```
+
+### Test Çalıştırma
+
+```bash
+mvn test
+```
+
+## Integration Tests
+
+### cURL ile Test
+
+```bash
+# PAdES doğrulama
+curl -X POST http://localhost:8086/api/v1/verify/pades \
+  -F "signedDocument=@test-signed.pdf" \
+  -F "level=COMPREHENSIVE"
+
+# XAdES doğrulama
+curl -X POST http://localhost:8086/api/v1/verify/xades \
+  -F "signedDocument=@test-signed.xml" \
+  -F "level=COMPREHENSIVE"
+
+# Timestamp doğrulama
+curl -X POST http://localhost:8086/api/v1/verify/timestamp \
+  -F "timestampToken=@test-timestamp.tst" \
+  -F "dataToVerify=@test-document.pdf"
+```
+
+## Test Sertifikaları
+
+Test sertifikaları için [Güvenlik - Test Sertifikaları](/security/test-certificates) sayfasına bakın.
+
+## Load Testing
+
+Load test script'i `devops/monitoring/load-test.sh` dosyasında bulunur.
+
+```bash
+cd devops/monitoring
+./load-test.sh
+```
+
+## İlgili Dokümantasyon
+
+- [Performans](/verify-api/performance)
+- [Güvenlik - Test Sertifikaları](/security/test-certificates)
+

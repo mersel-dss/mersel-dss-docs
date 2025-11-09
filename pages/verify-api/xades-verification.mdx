@@ -1,0 +1,158 @@
+# XAdES (XML) İmza Doğrulama
+
+XAdES (XML Advanced Electronic Signatures) formatındaki XML belgelerindeki dijital imzaları doğrulama.
+
+## Endpoint
+
+```
+POST /api/v1/verify/xades
+```
+
+## Request Parameters
+
+| Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
+|-----------|-----|---------|------------|----------|
+| `signedDocument` | MultipartFile | ✅ | - | İmzalı XML belgesi |
+| `originalDocument` | MultipartFile | ❌ | - | Orijinal belge (detached signature için, opsiyonel) |
+| `level` | String | ❌ | `SIMPLE` | Doğrulama seviyesi: `SIMPLE` veya `COMPREHENSIVE` |
+| `validateCertificateChain` | Boolean | ❌ | `true` | Sertifika zinciri doğrulaması yapılsın mı |
+| `checkRevocation` | Boolean | ❌ | `false` | İptal kontrolü yapılsın mı (OCSP/CRL) |
+| `validateTimestamp` | Boolean | ❌ | `false` | Zaman damgası doğrulaması yapılsın mı |
+
+## İmza Tipleri
+
+DSS otomatik olarak imza tipini tespit eder:
+
+- **Enveloped**: İmza XML içinde gömülü (en yaygın)
+- **Enveloping**: İmza XML'i sarıyor
+- **Detached**: İmza ayrı bir dosyada, orijinal belge ayrı
+
+### Detached İmza
+
+Detached imza tipi için `originalDocument` parametresi kullanılabilir (opsiyonel). DSS otomatik tespit edebilir ancak belirtilmesi daha güvenilir sonuçlar verir.
+
+```bash
+curl -X POST http://localhost:8086/api/v1/verify/xades \
+  -F "signedDocument=@signature.xml" \
+  -F "originalDocument=@original-document.xml" \
+  -F "level=COMPREHENSIVE"
+```
+
+## Response
+
+### Simple Level
+
+```json
+{
+  "valid": true,
+  "status": "VALID",
+  "signatureType": "XADES",
+  "verificationTime": "2024-11-08T10:30:00Z",
+  "signatures": [
+    {
+      "signatureId": "id-1234",
+      "valid": true,
+      "signatureFormat": "XAdES-BASELINE-B",
+      "signingTime": "2024-11-07T14:20:00Z"
+    }
+  ]
+}
+```
+
+### Comprehensive Level
+
+```json
+{
+  "valid": true,
+  "status": "VALID",
+  "signatureType": "XADES",
+  "verificationTime": "2024-11-08T10:30:00Z",
+  "signatures": [
+    {
+      "signatureId": "id-1234",
+      "valid": true,
+      "signatureFormat": "XAdES-BASELINE-B",
+      "signingTime": "2024-11-07T14:20:00Z",
+      "indication": "TOTAL_PASSED",
+      "subIndication": null,
+      "certificate": {
+        "subjectDN": "CN=Test User",
+        "issuerDN": "CN=Test CA",
+        "validFrom": "2024-01-01T00:00:00Z",
+        "validTo": "2025-12-31T23:59:59Z"
+      },
+      "qualificationDetails": {
+        "qualificationLevel": "QES"
+      },
+      "validationDetails": {
+        "certificateChainValid": true,
+        "revocationChecked": true,
+        "timestampValid": true
+      }
+    }
+  ]
+}
+```
+
+## Örnek Kullanım
+
+### cURL
+
+```bash
+# Enveloped/Enveloping imza (basit)
+curl -X POST http://localhost:8086/api/v1/verify/xades \
+  -F "signedDocument=@signed-document.xml" \
+  -F "level=SIMPLE"
+
+# Detached imza (kapsamlı)
+curl -X POST http://localhost:8086/api/v1/verify/xades \
+  -F "signedDocument=@signature.xml" \
+  -F "originalDocument=@original-document.xml" \
+  -F "level=COMPREHENSIVE" \
+  -F "checkRevocation=true" \
+  -F "validateTimestamp=true"
+```
+
+### JavaScript (Fetch)
+
+```javascript
+const formData = new FormData();
+formData.append('signedDocument', signedFile);
+formData.append('originalDocument', originalFile); // Detached için
+formData.append('level', 'COMPREHENSIVE');
+formData.append('checkRevocation', 'true');
+
+const response = await fetch('http://localhost:8086/api/v1/verify/xades', {
+  method: 'POST',
+  body: formData
+});
+
+const result = await response.json();
+console.log(result);
+```
+
+## Doğrulama Seviyeleri
+
+### SIMPLE
+
+- Hızlı doğrulama
+- Temel bilgiler (valid/invalid, format, signing time)
+- Sertifika zinciri ve iptal kontrolü yapılır ancak detaylar döndürülmez
+
+### COMPREHENSIVE
+
+- Detaylı doğrulama
+- Tüm bilgiler (sertifika zinciri, validation details, qualification details)
+- Sertifika bilgileri, iptal durumu, zaman damgası detayları
+
+**Not:** `level` parametresi sadece response detay seviyesini belirler. Validation parametreleri (`checkRevocation`, `validateTimestamp`) her iki seviyede de bağımsız olarak kullanılabilir.
+
+## DSS Raporları
+
+DSS'in detaylı raporlarını almak için özel endpoint'ler kullanılabilir:
+
+- `POST /api/v1/verify/xades/report/simple` - SimpleReport (JSON)
+- `POST /api/v1/verify/xades/report/detailed` - DetailedReport (XML)
+
+Detaylar için [DSS Raporları](/verify-api/dss-reports) sayfasına bakın.
+

@@ -1,0 +1,108 @@
+# Actuator Endpoints
+
+Spring Boot Actuator endpoint'leri ile sistem durumu ve metrikleri izlenebilir.
+
+## Endpoint'ler
+
+### Health
+
+Sistem sağlık durumunu kontrol eder.
+
+```
+GET /actuator/health
+```
+
+**Response:**
+
+```json
+{
+  "status": "UP",
+  "components": {
+    "diskSpace": {
+      "status": "UP",
+      "details": {
+        "total": 500000000000,
+        "free": 250000000000,
+        "threshold": 10485760
+      }
+    }
+  }
+}
+```
+
+### Metrics
+
+Sistem metriklerini listeler.
+
+```
+GET /actuator/metrics
+```
+
+**Response:**
+
+```json
+{
+  "names": [
+    "jvm.memory.used",
+    "jvm.memory.max",
+    "http.server.requests",
+    "process.uptime"
+  ]
+}
+```
+
+### Specific Metric
+
+Belirli bir metriğin değerini alır.
+
+```
+GET /actuator/metrics/http.server.requests
+```
+
+### Info
+
+Uygulama bilgilerini döndürür.
+
+```
+GET /actuator/info
+```
+
+**Response:**
+
+```json
+{
+  "app": {
+    "name": "Mersel DSS Verify API",
+    "description": "Dijital Imza Dogrulama Servisi API",
+    "version": "0.1.0"
+  }
+}
+```
+
+## Konfigürasyon
+
+```properties
+# Actuator endpoint'lerini etkinleştir
+management.endpoints.web.exposure.include=health,metrics,info,prometheus
+
+# Health endpoint detaylarını göster
+management.endpoint.health.show-details=when-authorized
+```
+
+## Güvenlik
+
+Production ortamlarında Actuator endpoint'lerini güvenli hale getirin:
+
+```properties
+# Sadece belirli endpoint'leri aç
+management.endpoints.web.exposure.include=health,info
+
+# Health endpoint'i herkese açık
+management.endpoint.health.show-details=always
+```
+
+## İlgili Dokümantasyon
+
+- [Monitoring](/verify-api/monitoring)
+- [Performans](/verify-api/performance)
+

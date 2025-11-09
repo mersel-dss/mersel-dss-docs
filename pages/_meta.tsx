@@ -9,6 +9,10 @@ export default {
     title: "Sign API",
     type: "page"
   },
+  "verify-api": {
+    title: "Verify API",
+    type: "page"
+  },
   "sign-ui": {
     title: "Sign UI",
     type: "page"

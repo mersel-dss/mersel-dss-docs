@@ -1,0 +1,51 @@
+# Scalar API Docs
+
+Verify API, Scalar UI ile interaktif API dokümantasyonu sağlar.
+
+## Erişim
+
+Scalar UI, uygulama root path'inde (`/`) erişilebilir:
+
+```
+http://localhost:8086/
+```
+
+## Özellikler
+
+- **Interaktif API Dokümantasyonu**: Tüm endpoint'leri test edebilirsiniz
+- **Request/Response Örnekleri**: Her endpoint için örnekler
+- **Schema Tanımları**: Tüm model tanımları
+- **Try It Out**: Doğrudan API'yi test etme
+
+## Endpoint'ler
+
+### PAdES Doğrulama
+
+- `POST /api/v1/verify/pades` - PAdES imza doğrulama
+- `POST /api/v1/verify/pades/report/simple` - SimpleReport (JSON)
+- `POST /api/v1/verify/pades/report/detailed` - DetailedReport (XML)
+
+### XAdES Doğrulama
+
+- `POST /api/v1/verify/xades` - XAdES imza doğrulama
+- `POST /api/v1/verify/xades/report/simple` - SimpleReport (JSON)
+- `POST /api/v1/verify/xades/report/detailed` - DetailedReport (XML)
+
+### Timestamp Doğrulama
+
+- `POST /api/v1/verify/timestamp` - Zaman damgası doğrulama
+
+## OpenAPI Spec
+
+OpenAPI 3.0 spec dosyası:
+
+```
+GET /api-docs
+```
+
+## İlgili Dokümantasyon
+
+- [PAdES Doğrulama](/verify-api/pades-verification)
+- [XAdES Doğrulama](/verify-api/xades-verification)
+- [Zaman Damgası Doğrulama](/verify-api/timestamp-verification)
+

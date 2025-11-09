@@ -1,0 +1,85 @@
+# Zaman Damgası Doğrulama
+
+RFC 3161 uyumlu zaman damgası token'larını doğrulama.
+
+## Endpoint
+
+```
+POST /api/v1/verify/timestamp
+```
+
+## Request Parameters
+
+| Parametre | Tip | Zorunlu | Varsayılan | Açıklama |
+|-----------|-----|---------|------------|----------|
+| `timestampToken` | MultipartFile | ✅ | - | Zaman damgası token dosyası (.tst) |
+| `dataToVerify` | MultipartFile | ✅ | - | Zaman damgası ile doğrulanacak veri |
+| `digestAlgorithm` | String | ❌ | `SHA-256` | Hash algoritması (SHA-256, SHA-384, SHA-512) |
+
+## Response
+
+```json
+{
+  "valid": true,
+  "status": "VALID",
+  "timestampTime": "2024-11-08T10:30:00Z",
+  "tsaName": "CN=KamuSM TSA",
+  "digestAlgorithm": "SHA-256",
+  "messageImprint": {
+    "hashAlgorithm": "SHA-256",
+    "hashedMessage": "a1b2c3d4..."
+  },
+  "certificate": {
+    "subjectDN": "CN=KamuSM TSA",
+    "issuerDN": "CN=KamuSM Root CA",
+    "validFrom": "2024-01-01T00:00:00Z",
+    "validTo": "2025-12-31T23:59:59Z"
+  }
+}
+```
+
+## Örnek Kullanım
+
+### cURL
+
+```bash
+curl -X POST http://localhost:8086/api/v1/verify/timestamp \
+  -F "timestampToken=@timestamp.tst" \
+  -F "dataToVerify=@document.pdf" \
+  -F "digestAlgorithm=SHA-256"
+```
+
+### JavaScript (Fetch)
+
+```javascript
+const formData = new FormData();
+formData.append('timestampToken', timestampFile);
+formData.append('dataToVerify', dataFile);
+formData.append('digestAlgorithm', 'SHA-256');
+
+const response = await fetch('http://localhost:8086/api/v1/verify/timestamp', {
+  method: 'POST',
+  body: formData
+});
+
+const result = await response.json();
+console.log(result);
+```
+
+## Doğrulama Süreci
+
+1. **Token Format Kontrolü**: Zaman damgası token'ının geçerli bir RFC 3161 formatında olup olmadığı kontrol edilir
+2. **Message Imprint Kontrolü**: Token içindeki hash değeri ile verilen verinin hash'i karşılaştırılır
+3. **Sertifika Doğrulama**: TSA sertifikası güvenilir kök sertifikalara kadar doğrulanır
+4. **Zaman Kontrolü**: Zaman damgası zamanı kontrol edilir
+
+## Desteklenen Hash Algoritmaları
+
+- `SHA-256` (varsayılan)
+- `SHA-384`
+- `SHA-512`
+
+## TÜBİTAK KamuSM TSA
+
+Türkiye'deki zaman damgası servisleri için KamuSM root sertifikaları kullanılır. Detaylar için [TÜBİTAK Entegrasyonu](/verify-api/tubitak-integration) sayfasına bakın.
+

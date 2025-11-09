@@ -1,0 +1,80 @@
+# Performans
+
+Verify API performans optimizasyonu ve tuning önerileri.
+
+## Performans Metrikleri
+
+### Yanıt Süreleri
+
+- **Simple Doğrulama**: ~100-300ms
+- **Comprehensive Doğrulama**: ~300-800ms
+- **Timestamp Doğrulama**: ~50-150ms
+
+### Throughput
+
+- **Basit Doğrulama**: ~50-100 req/s
+- **Kapsamlı Doğrulama**: ~20-50 req/s
+
+## Optimizasyon Önerileri
+
+### 1. Sertifika Cache
+
+Sertifikalar otomatik olarak cache'lenir. Cache süresini artırarak performansı iyileştirebilirsiniz:
+
+```properties
+CERT_CACHE_TTL=3600  # 1 saat (varsayılan)
+CRL_CACHE_TTL=3600   # 1 saat (varsayılan)
+```
+
+### 2. Thread Pool Ayarları
+
+```properties
+# Tomcat thread pool
+server.tomcat.threads.max=200
+server.tomcat.threads.min-spare=10
+```
+
+### 3. Connection Pool
+
+HTTP client connection pool ayarları:
+
+```properties
+# RestTemplate connection pool
+spring.http.client.connection-timeout=5000
+spring.http.client.read-timeout=10000
+```
+
+### 4. JVM Ayarları
+
+```bash
+java -Xms512m -Xmx2g \
+     -XX:+UseG1GC \
+     -XX:MaxGCPauseMillis=200 \
+     -jar verify-api.jar
+```
+
+## Monitoring
+
+Performans metriklerini Prometheus ve Grafana ile izleyin:
+
+- Yanıt süreleri
+- Throughput
+- Hata oranları
+- Bellek kullanımı
+- CPU kullanımı
+
+Detaylar için [Monitoring](/verify-api/monitoring) sayfasına bakın.
+
+## Load Testing
+
+Load test script'i `devops/monitoring/load-test.sh` dosyasında bulunur.
+
+```bash
+./devops/monitoring/load-test.sh
+```
+
+## İlgili Dokümantasyon
+
+- [Monitoring](/verify-api/monitoring)
+- [Testing](/verify-api/testing)
+

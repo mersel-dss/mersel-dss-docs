@@ -1,0 +1,221 @@
+# Güvenilir Kök Sertifika Resolver
+
+Sign API, güvenilir kök sertifikaları yüklemek için esnek bir resolver sistemi kullanır. Sistem üç farklı resolver tipini destekler.
+
+## Resolver Tipleri
+
+### 1. KamuSM XML Depo Online (Varsayılan)
+
+İnternet üzerinden KamuSM XML deposunu otomatik olarak indirir ve periyodik olarak günceller.
+
+**Özellikler:**
+- Otomatik sertifika indirme
+- Periyodik güncelleme (cron ile)
+- Her zaman güncel sertifikalar
+- İnternet bağlantısı gerektirir
+
+**Konfigürasyon:**
+
+```bash
+# Resolver tipi
+TRUSTED_ROOT_RESOLVER_TYPE=kamusm-online
+
+# KamuSM XML deposu URL'i
+KAMUSM_ROOT_URL=http://depo.kamusm.gov.tr/depo/SertifikaDeposu.xml
+
+# Otomatik yenileme cron ifadesi (varsayılan: her gün saat 03:15)
+TRUSTED_ROOT_REFRESH_CRON="0 15 3 * * *"
+```
+
+**application.properties:**
+
+```properties
+trusted.root.resolver.type=kamusm-online
+kamusm.root.url=http://depo.kamusm.gov.tr/depo/SertifikaDeposu.xml
+trusted.root.refresh-cron=0 15 3 * * *
+```
+
+### 2. KamuSM XML Depo Offline
+
+Yerel dosya sisteminden KamuSM XML deposunu okur. Offline ortamlar için idealdir.
+
+**Özellikler:**
+- Yerel dosya sisteminden okuma
+- İnternet bağlantısı gerektirmez
+- Air-gapped sistemler için uygun
+- Cron çalışır ancak başarısız olursa önceki sertifikalar korunur
+
+**Konfigürasyon:**
+
+```bash
+# Resolver tipi
+TRUSTED_ROOT_RESOLVER_TYPE=kamusm-offline
+
+# XML dosya yolu
+KAMUSM_ROOT_OFFLINE_PATH=/path/to/SertifikaDeposu.xml
+# veya Windows için
+KAMUSM_ROOT_OFFLINE_PATH=C:\SertifikaDeposu.xml
+# veya file: prefix ile
+KAMUSM_ROOT_OFFLINE_PATH=file:/path/to/SertifikaDeposu.xml
+# veya classpath'ten
+KAMUSM_ROOT_OFFLINE_PATH=classpath:certs/SertifikaDeposu.xml
+```
+
+**application.properties:**
+
+```properties
+trusted.root.resolver.type=kamusm-offline
+kamusm.root.offline.path=/opt/certs/SertifikaDeposu.xml
+trusted.root.refresh-cron=0 15 3 * * *
+```
+
+**Desteklenen Path Formatları:**
+
+- Absolute path: `/opt/certs/SertifikaDeposu.xml` (Unix/Linux/Mac)
+- Absolute path: `C:\SertifikaDeposu.xml` (Windows)
+- Absolute path: `C:/SertifikaDeposu.xml` (Windows, forward slash)
+- file: prefix: `file:/opt/certs/SertifikaDeposu.xml`
+- file: prefix: `file:/C:/SertifikaDeposu.xml` (Windows)
+- classpath: `classpath:certs/SertifikaDeposu.xml`
+
+### 3. Certificate Folder Resolver
+
+Belirtilen klasördeki tüm `.crt`, `.cer` ve `.pem` dosyalarını güvenilir kök sertifika olarak yükler.
+
+**Özellikler:**
+- Klasördeki tüm sertifika dosyalarını otomatik yükleme
+- Özel sertifika klasörlerinden yükleme
+- Kurumsal CA sertifikalarının toplu yüklenmesi
+- Cron çalışır ancak başarısız olursa önceki sertifikalar korunur
+
+**Konfigürasyon:**
+
+```bash
+# Resolver tipi
+TRUSTED_ROOT_RESOLVER_TYPE=certificate-folder
+
+# Sertifika klasoru yolu
+TRUSTED_ROOT_CERT_FOLDER_PATH=/path/to/certificates
+# veya Windows için
+TRUSTED_ROOT_CERT_FOLDER_PATH=C:\TrustedCerts
+# veya file: prefix ile
+TRUSTED_ROOT_CERT_FOLDER_PATH=file:/path/to/certificates
+```
+
+**application.properties:**
+
+```properties
+trusted.root.resolver.type=certificate-folder
+trusted.root.cert.folder.path=/opt/certificates
+trusted.root.refresh-cron=0 15 3 * * *
+```
+
+**Desteklenen Path Formatları:**
+
+- Absolute path: `/opt/certificates` (Unix/Linux/Mac)
+- Absolute path: `C:\TrustedCerts` (Windows)
+- Absolute path: `C:/TrustedCerts` (Windows, forward slash)
+- file: prefix: `file:/opt/certificates`
+- file: prefix: `file:/C:/TrustedCerts` (Windows)
+- classpath: `classpath:certs`
+
+**Not:** Klasördeki tüm geçerli sertifika dosyaları otomatik olarak yüklenir. Alt klasörler taranmaz.
+
+## Otomatik Yenileme (Cron)
+
+Tüm resolver'lar için ortak otomatik yenileme mekanizması vardır. `trusted.root.refresh-cron` parametresi ile kontrol edilir.
+
+**Davranış:**
+- **Online Resolver**: Her cron çalıştığında yeni sertifikaları indirir ve günceller
+- **Offline Resolver**: Her cron çalıştığında dosyayı yeniden okur. Başarısız olursa önceki sertifikalar korunur
+- **Folder Resolver**: Her cron çalıştığında klasörü yeniden tarar. Başarısız olursa önceki sertifikalar korunur
+
+**Örnek Cron İfadeleri:**
+
+```properties
+# Her gün saat 03:15 (varsayılan)
+trusted.root.refresh-cron=0 15 3 * * *
+
+# Her 6 saatte bir
+trusted.root.refresh-cron=0 0 */6 * * *
+
+# Her saat başı
+trusted.root.refresh-cron=0 0 * * * *
+
+# Her 30 dakikada bir
+trusted.root.refresh-cron=0 */30 * * * *
+```
+
+## Hata Yönetimi
+
+Tüm resolver'larda aynı hata yönetimi stratejisi kullanılır:
+
+1. **İlk Yükleme Başarısız**: Exception fırlatılır, uygulama başlamaz
+2. **Cron Yenileme Başarısız**: Önceki sertifikalar korunur, uygulama çalışmaya devam eder
+3. **Boş Veri**: Önceki sertifikalar korunur, uyarı loglanır
+
+## Kullanım Senaryoları
+
+### Senaryo 1: Online Ortam (Varsayılan)
+
+```properties
+trusted.root.resolver.type=kamusm-online
+kamusm.root.url=http://depo.kamusm.gov.tr/depo/SertifikaDeposu.xml
+trusted.root.refresh-cron=0 15 3 * * *
+```
+
+**Avantajlar:**
+- Her zaman güncel sertifikalar
+- Otomatik güncelleme
+- Minimal konfigürasyon
+
+### Senaryo 2: Offline Ortam (Air-Gapped)
+
+```properties
+trusted.root.resolver.type=kamusm-offline
+kamusm.root.offline.path=/opt/certs/SertifikaDeposu.xml
+trusted.root.refresh-cron=0 15 3 * * *
+```
+
+**Avantajlar:**
+- İnternet bağlantısı gerektirmez
+- Güvenlik duvarlı ortamlar için uygun
+- Yerel dosya kontrolü
+
+### Senaryo 3: Özel Sertifika Klasörü
+
+```properties
+trusted.root.resolver.type=certificate-folder
+trusted.root.cert.folder.path=/opt/company-certs
+trusted.root.refresh-cron=0 15 3 * * *
+```
+
+**Avantajlar:**
+- Kurumsal CA sertifikalarını ekleme
+- Test ortamlarında özel sertifikalar
+- Farklı kaynaklardan sertifika birleştirme
+
+## Windows Path Desteği
+
+Windows sistemlerinde aşağıdaki formatlar desteklenir:
+
+```properties
+# Backslash ile
+kamusm.root.offline.path=C:\SertifikaDeposu.xml
+trusted.root.cert.folder.path=C:\TrustedCerts
+
+# Forward slash ile (Java'da da çalışır)
+kamusm.root.offline.path=C:/SertifikaDeposu.xml
+trusted.root.cert.folder.path=C:/TrustedCerts
+
+# file: prefix ile
+kamusm.root.offline.path=file:/C:/SertifikaDeposu.xml
+trusted.root.cert.folder.path=file:/C:/TrustedCerts
+```
+
+## İlgili Dokümantasyon
+
+- [Verify API - Güvenilir Kök Sertifika Resolver](/verify-api/trusted-root-resolver)
+- [Sign API - Genel Bakış](/sign-api/overview)
+- [TÜBİTAK Entegrasyonu](/sign-api/tubitak-integration)
+

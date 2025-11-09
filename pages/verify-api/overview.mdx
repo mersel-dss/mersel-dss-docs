@@ -1,0 +1,52 @@
+# Verify API - Genel Bakış
+
+Türkiye e-imza standartlarına uygun dijital imza doğrulama servisi.
+
+## Özellikler
+
+- **PAdES (PDF) İmza Doğrulama** - PDF belgelerindeki dijital imzaları doğrulama
+- **XAdES (XML) İmza Doğrulama** - XML belgelerindeki dijital imzaları doğrulama
+  - Enveloped, Enveloping ve Detached imza desteği
+- **Zaman Damgası Doğrulama** - RFC 3161 uyumlu zaman damgası doğrulama
+- **Sertifika Zinciri Doğrulama** - Güvenilir root sertifikalara kadar doğrulama
+- **İptal Kontrolü** - OCSP ve CRL ile sertifika iptal durumu kontrolü
+- **Güvenilir Kök Sertifika Resolver Desteği** - Üç farklı resolver tipi
+- **İki Seviyeli Doğrulama**
+  - **Simple**: Hızlı, temel imza doğrulaması
+  - **Comprehensive**: Detaylı, tüm bilgileri içeren doğrulama
+- **Docker Desteği** - Kolay deployment
+- **Prometheus Metrics** - Monitoring ve metrikleme
+- **OpenAPI Dokümantasyonu** - Scalar UI ile interaktif API dokümantasyonu
+
+## Hızlı Başlangıç
+
+### Docker ile Çalıştırma
+
+```bash
+cd devops/docker
+cp .env.example .env
+docker-compose up -d
+```
+
+Servis `http://localhost:8086` adresinde çalışmaya başlayacaktır.
+
+### Health Check
+
+```bash
+curl http://localhost:8086/api/v1/health
+```
+
+## API Endpoints
+
+- `POST /api/v1/verify/pades` - PAdES imza doğrulama
+- `POST /api/v1/verify/xades` - XAdES imza doğrulama
+- `POST /api/v1/verify/timestamp` - Zaman damgası doğrulama
+- `POST /api/v1/verify/pades/report/simple` - PAdES SimpleReport (JSON)
+- `POST /api/v1/verify/pades/report/detailed` - PAdES DetailedReport (XML)
+- `POST /api/v1/verify/xades/report/simple` - XAdES SimpleReport (JSON)
+- `POST /api/v1/verify/xades/report/detailed` - XAdES DetailedReport (XML)
+
+## Konfigürasyon
+
+Detaylı konfigürasyon bilgileri için [Güvenilir Kök Sertifika Resolver](/verify-api/trusted-root-resolver) sayfasına bakın.
+

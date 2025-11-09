@@ -1,0 +1,109 @@
+# Monitoring
+
+Verify API, Prometheus metrikleri ve Actuator endpoint'leri ile kapsamlı monitoring desteği sunar.
+
+## Prometheus Metrikleri
+
+Verify API, Prometheus formatında metrikler sağlar.
+
+### Endpoint
+
+```
+GET /actuator/prometheus
+```
+
+### Örnek Metrikler
+
+```
+# HTTP istekleri
+http_server_requests_seconds_count{method="POST",uri="/api/v1/verify/pades",status="200"} 150.0
+http_server_requests_seconds_sum{method="POST",uri="/api/v1/verify/pades",status="200"} 45.2
+
+# JVM metrikleri
+jvm_memory_used_bytes{area="heap"} 256000000.0
+jvm_memory_max_bytes{area="heap"} 1073741824.0
+
+# Uygulama metrikleri
+application_verification_count_total{type="pades"} 150.0
+application_verification_duration_seconds{type="pades"} 0.3
+```
+
+## Grafana Dashboards
+
+Prometheus metrikleri Grafana ile görselleştirilebilir. Örnek dashboard'lar `devops/monitoring/grafana/dashboards/` klasöründe bulunur.
+
+## Actuator Endpoints
+
+Spring Boot Actuator endpoint'leri ile sistem durumu izlenebilir.
+
+### Health Check
+
+```
+GET /actuator/health
+```
+
+**Response:**
+
+```json
+{
+  "status": "UP",
+  "components": {
+    "db": {
+      "status": "UP"
+    },
+    "diskSpace": {
+      "status": "UP"
+    }
+  }
+}
+```
+
+### Metrics
+
+```
+GET /actuator/metrics
+```
+
+### Info
+
+```
+GET /actuator/info
+```
+
+Detaylar için [Actuator Endpoints](/verify-api/actuator-endpoints) sayfasına bakın.
+
+## Logging
+
+Verify API, yapılandırılabilir logging sistemi kullanır.
+
+### Log Dosyaları
+
+- `logs/application.log` - Genel loglar
+- `logs/error.log` - Hata logları
+- `logs/signature-operations.log` - İmza operasyon logları
+
+### Log Seviyeleri
+
+```properties
+# application.properties
+logging.level.io.mersel.dss.verify.api=INFO
+logging.level.eu.europa.esig.dss=WARN
+```
+
+## Alerting
+
+Prometheus AlertManager ile alert kuralları tanımlanabilir. Örnek kurallar `devops/monitoring/prometheus/alerts.yml` dosyasında bulunur.
+
+### Örnek Alert Kuralları
+
+- Yüksek hata oranı
+- Yavaş yanıt süreleri
+- Yüksek bellek kullanımı
+- Disk alanı uyarıları
+
+## İlgili Dokümantasyon
+
+- [Actuator Endpoints](/verify-api/actuator-endpoints)
+- [Performans](/verify-api/performance)
+- [DevOps - Monitoring](/devops/monitoring)
+
