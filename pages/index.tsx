@@ -479,12 +479,24 @@ function HomePage() {
           <Separator className="my-8 bg-border/50" />
 
           {/* Bottom Footer */}
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6 md:gap-4 text-sm text-muted-foreground">
+            {/* Copyright */}
             <p className="flex items-center gap-2">
               <span>© {new Date().getFullYear()}</span>
               <a href="https://mersel.io" target="_blank" rel="noopener noreferrer" className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition-colors">MERSEL YAZILIM A.S.</a>
               <span>- Tüm hakları saklıdır.</span>
             </p>
+            
+            {/* Logo */}
+            <div className="flex justify-center">
+              <img 
+                src="/mersel-love-os.png" 
+                alt="Mersel Logo" 
+                className="h-10 object-contain opacity-90 hover:opacity-100 transition-opacity"
+              />
+            </div>
+            
+            {/* Slogan */}
             <p className="flex items-center gap-2 italic">
               <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400" />
               <span>e-Dönüşüm ekosisteminde birlikte büyüyoruz</span>

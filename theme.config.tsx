@@ -18,9 +18,16 @@ const config: DocsThemeConfig = {
   docsRepositoryBase: "https://github.com/mersel-dss/mersel-dss-docs",
   footer: {
     content: () => (
-      <span>
-        Türkiye e-imza topluluğuna katkınız için teşekkürler! 🇹🇷
-      </span>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', justifyContent: 'center' }}>
+        <img 
+          src="/mersel-love-os.png" 
+          alt="Mersel Logo" 
+          style={{ height: '40px', objectFit: 'contain' }}
+        />
+        <span>
+          Türkiye e-imza topluluğuna katkınız için teşekkürler! 🇹🇷
+        </span>
+      </div>
     ),
   },
   head: () => {
